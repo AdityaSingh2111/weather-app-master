@@ -1,4 +1,6 @@
 {
+    "cleanUrls": true,
+    "trailingSlash": false,
     "headers": [
         {
             "source": "/mausam-logo.png",
@@ -54,7 +56,7 @@
             ]
         },
         {
-            "source": "/(.*).html",
+            "source": "/",
             "headers": [
                 {
                     "key": "Cache-Control",
@@ -80,7 +82,5 @@
             "source": "/(.*)",
             "destination": "/index.html"
         }
-    ],
-    "trailingSlash": false,
-    "cleanUrls": true
+    ]
 }
