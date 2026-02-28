@@ -4,6 +4,19 @@
     "outputDirectory": "dist",
     "cleanUrls": true,
     "trailingSlash": false,
+    "redirects": [
+        {
+            "source": "/(.*)",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "^www\\.(?<domain>.*)$"
+                }
+            ],
+            "destination": "https://(?<domain>)/$1",
+            "permanent": true
+        }
+    ],
     "headers": [
         {
             "source": "/mausam-icon-512.png",

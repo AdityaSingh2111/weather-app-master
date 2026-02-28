@@ -6,7 +6,15 @@ export default defineConfig({
         outDir: 'dist',
         emptyOutDir: true,
         rollupOptions: {
-            input: 'index.html'
+            input: {
+                main: 'index.html',
+                sw: 'sw.js'
+            },
+            output: {
+                entryFileNames: assetInfo => {
+                    return assetInfo.name === 'sw' ? '[name].js' : 'assets/[name]-[hash].js';
+                }
+            }
         },
         // Generate source maps for debugging production issues
         sourcemap: true,
