@@ -11,6 +11,9 @@
   --text-color: #ffffff;
   --glass-opacity: 0.35;
   --ease-cinematic: cubic-bezier(0.4, 0, 0.2, 1);
+  --nav-height-mobile: 64px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 html,
@@ -27,6 +30,12 @@ body {
   transition: background-color 0.5s var(--ease-cinematic), color 0.5s var(--ease-cinematic);
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  /* Typography: Consistent cross-browser rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Prevent pull-to-refresh bounce on Android Chrome */
+  overscroll-behavior: none;
 }
 
 .hidden {
@@ -139,10 +148,13 @@ body {
   width: 100%;
   height: 100vh;
   height: 100dvh;
+  min-height: -webkit-fill-available;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  /* Prevent iOS Safari white flash on background */
+  overflow: hidden;
 }
 
 .overlay-layer {
@@ -200,9 +212,15 @@ body {
 .bg-overlay {
   position: absolute;
   inset: -10%;
-  background: radial-gradient(circle at 50% 120%, rgba(2, 4, 10, 0.1) 0%, rgba(2, 4, 10, 0.95) 80%);
+  /* Stronger vignette for better text readability across all conditions */
+  background:
+    radial-gradient(ellipse at 50% 120%, rgba(2, 4, 10, 0.05) 0%, rgba(2, 4, 10, 0.9) 70%),
+    radial-gradient(ellipse at 0% 50%, rgba(2, 4, 10, 0.3) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 50%, rgba(2, 4, 10, 0.3) 0%, transparent 60%);
   z-index: 3;
   pointer-events: none;
+  /* Prevent gradient banding */
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .bloom-layer {
@@ -275,7 +293,8 @@ body {
   height: 100%;
   padding: clamp(1rem, 3vw, 2rem);
   padding-top: max(env(safe-area-inset-top, 20px), 1rem);
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+  max-width: 100%;
 }
 
 /* Persistent Search Layer - Always visible regardless of app state */
@@ -289,9 +308,12 @@ body {
   justify-content: center;
   padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1rem, 3vw, 2rem);
   padding-top: max(env(safe-area-inset-top, 20px), clamp(0.75rem, 2vw, 1.5rem));
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 100%);
   pointer-events: none;
   /* Let clicks pass through the container */
+  /* Ensure no horizontal overflow on Safari */
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 .persistent-search-layer>* {
@@ -311,9 +333,8 @@ h3 {
 .dashboard-card {
   width: 100%;
   max-width: clamp(320px, 90vw, 1000px);
-  background: rgba(10, 15, 25, 0.55);
-  backdrop-filter: blur(48px) saturate(1.2);
-  -webkit-backdrop-filter: blur(48px) saturate(1.2);
+  /* Fallback for browsers without backdrop-filter */
+  background: rgba(10, 15, 25, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: clamp(16px, 3vw, 32px);
   padding: clamp(1.25rem, 4vw, 3rem);
@@ -324,6 +345,15 @@ h3 {
   transform: perspective(1200px) rotateX(calc(var(--mouse-y, 0) * 1.5deg)) rotateY(calc(var(--mouse-x, 0) * -1.5deg)) translateY(0);
   transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), border 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform, opacity;
+  contain: layout style;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .dashboard-card {
+    background: rgba(10, 15, 25, 0.55);
+    backdrop-filter: blur(48px) saturate(1.2);
+    -webkit-backdrop-filter: blur(48px) saturate(1.2);
+  }
 }
 
 @media (hover: hover) {
@@ -359,9 +389,8 @@ h3 {
 #city-search {
   width: 100%;
   padding: clamp(1rem, 3vw, 1.1rem) clamp(3rem, 12vw, 4rem) clamp(1rem, 3vw, 1.1rem) clamp(1.25rem, 4vw, 2rem);
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  /* Fallback for browsers without backdrop-filter */
+  background: rgba(10, 15, 30, 0.75);
   border: none;
   border-radius: 100px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -369,16 +398,28 @@ h3 {
   font-family: inherit;
   font-size: clamp(1rem, 3vw, 1.15rem);
   outline: none;
-  transition: background 0.2s var(--ease-cinematic), box-shadow 0.2s var(--ease-cinematic), padding 0.2s;
+  transition: background 0.3s var(--ease-cinematic), box-shadow 0.3s var(--ease-cinematic);
+  /* Prevent layout shift from iOS font scaling */
+  -webkit-text-size-adjust: 100%;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  #city-search {
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
 }
 
 #city-search:focus {
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.05), 0 8px 24px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), 0 0 0 3px rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.2);
+  outline: 2px solid rgba(255, 255, 255, 0.2);
+  outline-offset: 2px;
 }
 
 #city-search::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .geo-btn {
@@ -386,8 +427,9 @@ h3 {
   right: clamp(0.6rem, 2vw, 1rem);
   top: 50%;
   transform: translateY(-50%);
-  width: clamp(32px, 8vw, 40px);
-  height: clamp(32px, 8vw, 40px);
+  /* Ensure minimum 44px tap target on touch devices */
+  width: clamp(44px, 8vw, 44px);
+  height: clamp(44px, 8vw, 44px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -396,8 +438,11 @@ h3 {
   border-radius: 50%;
   color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  transition: all 0.2s var(--ease-cinematic);
+  transition: color 0.2s var(--ease-cinematic), background 0.2s var(--ease-cinematic);
   z-index: 5;
+  /* Prevent accidental text selection on rapid taps */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 @media (hover: hover) {
@@ -408,7 +453,8 @@ h3 {
 }
 
 .geo-btn:active {
-  transform: translateY(-50%) scale(0.9);
+  transform: translateY(-50%) scale(0.88);
+  transition-duration: 0.1s;
 }
 
 .search-results {
@@ -416,17 +462,26 @@ h3 {
   top: calc(100% + 0.5rem);
   left: 0;
   right: 0;
-  background: rgba(20, 30, 48, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Solid fallback for Firefox and older Safari */
+  background: rgba(12, 18, 32, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: clamp(16px, 3vw, 24px);
   overflow: hidden;
   z-index: 100;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .search-results {
+    background: rgba(20, 30, 48, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
 }
 
 .search-result-item {
+  /* Minimum 44px tap target height */
+  min-height: 44px;
   padding: clamp(0.75rem, 3vw, 1.25rem) clamp(1.25rem, 4vw, 2rem);
   cursor: pointer;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -437,8 +492,20 @@ h3 {
   font-size: clamp(0.95rem, 3vw, 1.1rem);
 }
 
-.search-result-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+@media (hover: hover) {
+  .search-result-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.search-result-item:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.search-result-item:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.4);
+  outline-offset: -2px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .search-result-item:last-child {
@@ -530,12 +597,12 @@ h3 {
 }
 
 .time-text {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(1.75rem, 5vw, 3.5rem);
   font-weight: 200;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.05em;
   line-height: 1;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .solar-arc-container {
@@ -613,10 +680,13 @@ h3 {
 }
 
 .weather-desc {
-  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-size: clamp(1.1rem, 3vw, 1.75rem);
   font-weight: 500;
   text-transform: capitalize;
   letter-spacing: -0.01em;
+  /* Subtle text shadow for legibility across all sky conditions */
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+  margin-bottom: 0.25rem;
 }
 
 /* Right Column */
@@ -630,26 +700,28 @@ h3 {
 .hero-temp {
   font-size: clamp(4rem, 8vw, 6.5rem);
   font-weight: 200;
-  line-height: 0.9;
+  line-height: 0.95;
   letter-spacing: -0.06em;
   text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   font-variant-numeric: tabular-nums;
-  min-height: 104px;
+  /* Remove fixed min-height that causes layout shift — use min-height: 1em instead */
+  min-height: 1em;
   contain: layout;
 }
 
 .feels-like {
   font-size: clamp(0.9rem, 2vw, 1.1rem);
   opacity: 0.8;
-  margin-bottom: clamp(1rem, 3vw, 2rem);
+  margin-bottom: clamp(0.75rem, 2vw, 1.5rem);
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .mini-metrics {
   display: flex;
   gap: 1.5rem;
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
 .metric {
@@ -659,7 +731,7 @@ h3 {
 }
 
 .metric-label {
-  font-size: 0.75rem;
+  font-size: clamp(0.65rem, 1.5vw, 0.75rem);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   opacity: 0.8;
@@ -673,7 +745,7 @@ h3 {
 
 .metric span:last-child {
   font-weight: 500;
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 2.5vw, 1.1rem);
 }
 
 /* Section Titles */
@@ -699,10 +771,10 @@ h3 {
   flex-direction: column;
   align-items: center;
   padding: 1.25rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -716,16 +788,18 @@ h3 {
 }
 
 .metric-box .metric-label {
-  font-size: 0.75rem;
+  font-size: clamp(0.65rem, 1.5vw, 0.75rem);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   opacity: 0.6;
   margin-bottom: 0.5rem;
+  text-align: center;
 }
 
 .metric-box .metric-value {
-  font-size: 1.25rem;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Hourly Forecast Strip (Snap Scrolling) */
@@ -906,17 +980,25 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background: rgba(20, 30, 48, 0.45);
-  backdrop-filter: blur(24px) saturate(1.5);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  /* Fallback for browsers without backdrop-filter */
+  background: rgba(12, 18, 30, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 100px;
   padding: 1rem 0.5rem;
   z-index: 100;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .sidebar {
+    background: rgba(20, 30, 48, 0.5);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  }
 }
 
 .nav-btn {
+  /* 48px ensures ≥ 44px WCAG touch target requirement */
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -924,23 +1006,32 @@ h3 {
   align-items: center;
   justify-content: center;
   color: rgba(255, 255, 255, 0.5);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
+  /* Prevent accidental selection on rapid taps */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
+.nav-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+  color: white;
+}
 
 .nav-btn.active {
   color: #fff;
   background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.nav-btn.active svg {
+  transform: scale(1.12);
 }
 
 .nav-btn svg {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.nav-btn.active svg {
-  transform: scale(1.1);
+  pointer-events: none;
 }
 
 /* Make Dashboard scrollable */
@@ -948,9 +1039,12 @@ h3 {
   max-height: 85vh;
   max-height: 85dvh;
   overflow-y: auto;
+  overflow-x: hidden;
   scroll-behavior: smooth;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  /* Prevent iOS scroll from leaking out of container */
+  overscroll-behavior-y: contain;
 }
 
 .scrollable-card::-webkit-scrollbar {
@@ -987,6 +1081,46 @@ h3 {
   }
 }
 
+/* Landscape on short screens (phones in landscape) */
+@media (max-height: 500px) and (orientation: landscape) {
+  .content-layer {
+    padding-top: max(env(safe-area-inset-top, 8px), 0.5rem);
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+    justify-content: flex-start;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+
+  .scrollable-card {
+    max-height: calc(100dvh - 56px);
+    margin-bottom: 56px;
+  }
+
+  .sidebar {
+    /* In landscape on mobile, keep sidebar at bottom with reduced height */
+    padding: 0.25rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .dashboard-top {
+    gap: 0.75rem;
+  }
+
+  .solar-arc-container {
+    display: none;
+  }
+
+  .time-text {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .sidebar {
@@ -996,21 +1130,34 @@ h3 {
     left: 0;
     transform: none;
     flex-direction: row;
-    justify-content: center;
-    padding: 0.5rem 1rem;
-    padding-bottom: max(env(safe-area-inset-bottom, 20px), 0.5rem);
-    gap: 1.5rem;
+    justify-content: space-around;
+    padding: 0.5rem 1.5rem;
+    /* Account for safe-area-inset-bottom (home indicator on iPhone) */
+    padding-bottom: max(env(safe-area-inset-bottom, 4px), 0.5rem);
+    gap: 0;
     border: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 0;
     width: 100%;
-    background: rgba(15, 20, 30, 0.65);
-    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+    /* Slightly lighter nav to reduce heavy gradient feel */
+    background: rgba(8, 12, 22, 0.78);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.35), 0 -1px 0 rgba(255, 255, 255, 0.06);
+    /* Ensure nav covers safe area on iPhone */
+    padding-bottom: max(env(safe-area-inset-bottom, 8px), 0.5rem);
+  }
+
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .sidebar {
+      background: rgba(8, 12, 22, 0.6);
+      backdrop-filter: blur(20px) saturate(1.8);
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    }
   }
 
   .nav-btn {
-    width: 44px;
-    height: 44px;
+    /* Ensure exactly 48px for WCAG touch target compliance */
+    width: 48px;
+    height: 48px;
   }
 
   .scrollable-card {
@@ -1200,7 +1347,8 @@ h3 {
 .time-sunrise {
   --sky-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fbe8d5 100%);
   --bloom-intensity: 0.4;
-  --text-color: #2c3e50;
+  /* Keep text white for contrast on bright sunrise gradient */
+  --text-color: #ffffff;
   --glass-opacity: 0.4;
 }
 
@@ -1223,4 +1371,117 @@ h3 {
   --bloom-intensity: 0.1;
   --text-color: #e0e0e0;
   --glass-opacity: 0.5;
+}
+
+/* ====================================================
+   PERFORMANCE: Reduced Motion
+   Respects user OS-level accessibility preferences
+   ==================================================== */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .dashboard-card {
+    transform: none !important;
+  }
+
+  .bg-buffer {
+    animation: none !important;
+  }
+
+  .starfield-layer::after {
+    animation: none !important;
+  }
+}
+
+/* ====================================================
+   GLASS PANEL: Fallback for all panels
+   ==================================================== */
+.glass-panel {
+  /* Solid fallback */
+  background: rgba(15, 22, 38, 0.85);
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .glass-panel {
+    background: rgba(20, 30, 48, 0.45);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  }
+}
+
+/* ====================================================
+   TOUCH: Remove hover states on touch devices
+   @media (hover: none) targets touch-only devices
+   ==================================================== */
+@media (hover: none) {
+
+  .nav-btn:hover,
+  .metric-box:hover,
+  .forecast-day:hover,
+  .daily-forecast-row:hover,
+  .city-preview:hover,
+  .geo-btn:hover {
+    transform: none;
+    background: initial;
+    box-shadow: initial;
+    border-color: initial;
+    color: initial;
+  }
+
+  /* Provide tap feedback instead */
+  .nav-btn:active {
+    transform: scale(0.92);
+    background: rgba(255, 255, 255, 0.15);
+    transition-duration: 0.1s;
+  }
+
+  .metric-box:active {
+    background: rgba(255, 255, 255, 0.07);
+    transition-duration: 0.1s;
+  }
+
+  .forecast-day:active {
+    background: rgba(255, 255, 255, 0.07);
+    transition-duration: 0.1s;
+  }
+
+  .city-preview:active {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(0.97);
+    transition-duration: 0.1s;
+  }
+}
+
+/* ====================================================
+   ACCESSIBILITY: Focus Visible States
+   Keyboard navigation focus rings
+   ==================================================== */
+.city-preview:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
+/* ====================================================
+   SKELETON & ERROR STATE HELPERS
+   Moved from inline styles for separation of concerns
+   ==================================================== */
+
+/* Loading skeleton card offset — pushes below persistent search bar */
+.skeleton-card-loading {
+  margin-top: 5rem;
+}
+
+/* Error state content layer — centered layout with top offset for search bar */
+.error-content-layer {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  padding-top: max(env(safe-area-inset-top, 20px), 140px);
 }

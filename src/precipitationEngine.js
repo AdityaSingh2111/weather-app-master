@@ -19,8 +19,13 @@ export const renderPrecipitation = (ctx, canvas, timestamp, state) => {
     else if (id >= 300 && id < 600) { currentType = 'rain'; targetParticleCount = 500; }
     else if (id >= 600 && id < 700) { currentType = 'snow'; targetParticleCount = 300; }
 
-    // Optimization for mobile (strict limits)
-    if (window.innerWidth <= 768) {
+    // Optimization for small and mobile screens
+    if (window.innerWidth <= 480) {
+        // Very small / low-power devices
+        if (currentType === 'storm') targetParticleCount = 80;
+        else if (currentType === 'rain') targetParticleCount = 60;
+        else targetParticleCount = 50;
+    } else if (window.innerWidth <= 768) {
         if (currentType === 'storm') targetParticleCount = 150;
         else if (currentType === 'rain') targetParticleCount = 100;
         else targetParticleCount = 80;

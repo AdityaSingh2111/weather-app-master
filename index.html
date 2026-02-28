@@ -102,7 +102,7 @@
   </div>
   <div id="loading" class="cinematic-container">
     <div class="content-layer">
-      <div class="dashboard-card" style="margin-top: 5rem;">
+      <div class="dashboard-card skeleton-card-loading">
         <div class="dashboard-top">
           <div class="dash-left" style="width: 100%;">
             <div class="skeleton-block skeleton-title" style="width: 40%;"></div>
@@ -133,8 +133,7 @@
     </div>
   </div>
   <div id="error" class="hidden cinematic-container" style="z-index: 50;">
-    <div class="content-layer"
-      style="justify-content: center; align-items: center; display: flex; height: 100vh; padding-top: 140px;">
+    <div class="content-layer error-content-layer">
       <div class="dashboard-card"
         style="align-items: center; text-align: center; max-width: 500px; padding: 4rem 2rem;">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="64" height="64"
@@ -215,9 +214,9 @@
           <div class="dashboard-top">
             <!-- Left: Location & Time -->
             <div class="dash-left">
-              <h2 id="location" class="location-text">--</h2>
+              <h2 id="location" class="location-text" aria-live="polite" aria-label="Current location">--</h2>
               <div id="date-text" class="date-text">--</div>
-              <div id="time-text" class="time-text">--:--</div>
+              <div id="time-text" class="time-text" aria-live="off">--:--</div>
               <div class="solar-arc-container">
                 <svg width="200" height="70" viewBox="0 0 200 70" class="solar-svg">
                   <!-- The dashed line indicating the physical horizon orbit -->
@@ -239,13 +238,14 @@
 
             <!-- Center: Condition Visuals -->
             <div class="dash-center">
-              <div id="weather-icon-container" class="weather-icon"></div>
-              <h3 id="description" class="weather-desc">Locating...</h3>
+              <div id="weather-icon-container" class="weather-icon" role="img" aria-label="Weather condition icon">
+              </div>
+              <h3 id="description" class="weather-desc" aria-live="polite">Locating...</h3>
             </div>
 
             <!-- Right: Temperature -->
             <div class="dash-right">
-              <h1 id="temperature" class="hero-temp">--&deg;</h1>
+              <h1 id="temperature" class="hero-temp" aria-live="polite" aria-label="Current temperature">--&deg;</h1>
               <div class="feels-like">Feels like <span id="feels-like">--&deg;</span></div>
 
               <!-- Kept Humidity and Wind in a small panel under temperature to not lose metric data -->

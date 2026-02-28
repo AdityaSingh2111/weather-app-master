@@ -9,7 +9,7 @@ export const renderNightSky = (ctx, canvas, timestamp, cloudCoverPercent) => {
     const visibilityFactor = Math.max(0, (100 - (cloudCoverPercent || 0)) / 100);
     if (visibilityFactor <= 0.05) return; // Too cloudy
 
-    const starCount = window.innerWidth < 768 ? 60 : 150;
+    const starCount = window.innerWidth < 480 ? 40 : window.innerWidth < 768 ? 60 : 150;
 
     if (!initialized || stars.length !== starCount) {
         stars.length = 0;
@@ -17,8 +17,9 @@ export const renderNightSky = (ctx, canvas, timestamp, cloudCoverPercent) => {
             stars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                size: Math.random() > 0.9 ? 1.2 : 0.6,
-                baseAlpha: Math.random() * 0.3 + 0.05,
+                size: Math.random() > 0.9 ? 1.0 : 0.5,
+                // Slightly reduced brightness for visual subtlety
+                baseAlpha: Math.random() * 0.2 + 0.04,
                 // Twinkle phase offset
                 phase: Math.random() * Math.PI * 2
             });
