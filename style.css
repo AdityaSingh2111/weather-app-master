@@ -426,8 +426,9 @@ h3 {
 .geo-btn {
   position: absolute;
   right: clamp(0.6rem, 2vw, 1rem);
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
+  margin: auto;
   /* Ensure minimum 44px tap target on touch devices */
   width: clamp(44px, 8vw, 44px);
   height: clamp(44px, 8vw, 44px);
@@ -454,7 +455,7 @@ h3 {
 }
 
 .geo-btn:active {
-  transform: translateY(-50%) scale(0.88);
+  transform: scale(0.88);
   transition-duration: 0.1s;
 }
 
