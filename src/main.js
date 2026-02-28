@@ -4,7 +4,7 @@ import { setState, subscribe } from './state.js';
 import { updateUI, bindSearchInput, renderSearchResults, renderCityPreviews, animateDashboardTransition } from './ui.js';
 import { normalizeWeatherData } from './transform.js';
 import { initTimeEngine } from './timeEngine.js';
-import { initRainSystem } from './rain.js';
+
 import { getSavedCities, addCity, removeCity } from './cities.js';
 import { initParallax } from './parallax.js';
 import { initNavigation } from './nav.js';
@@ -188,7 +188,7 @@ const init = async () => {
 
     // Spin up environmental systems
     initTimeEngine();
-    initRainSystem();
+
     initParallax();
     initNavigation();
 

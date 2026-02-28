@@ -1,14 +1,6 @@
 import { getIconForCondition } from './icons.js';
+import { getShortDayName, getShortHour } from './clockManager.js';
 
-const getShortDayName = (unixSeconds, offsetSeconds = 0) => {
-    const localDate = new Date((unixSeconds + offsetSeconds) * 1000);
-    return localDate.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
-};
-
-const getShortHour = (unixSeconds, offsetSeconds = 0) => {
-    const localDate = new Date((unixSeconds + offsetSeconds) * 1000);
-    return localDate.toLocaleTimeString('en-US', { hour: 'numeric', timeZone: 'UTC' });
-};
 
 export const renderForecasts = (state) => {
     const forecastStrip = document.getElementById('forecast-strip');

@@ -1,8 +1,14 @@
 {
     "name": "mausam",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "private": true,
+    "type": "module",
     "scripts": {
-        "build": "echo 'Static build step complete.'"
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "devDependencies": {
+        "vite": "^6.2.0"
     }
 }

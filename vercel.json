@@ -1,12 +1,12 @@
 {
     "framework": null,
     "buildCommand": "npm run build",
-    "outputDirectory": ".",
+    "outputDirectory": "dist",
     "cleanUrls": true,
     "trailingSlash": false,
     "headers": [
         {
-            "source": "/mausam-logo.png",
+            "source": "/mausam-icon-512.png",
             "headers": [
                 {
                     "key": "Cache-Control",
