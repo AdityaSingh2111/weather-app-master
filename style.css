@@ -909,35 +909,179 @@ h3 {
 }
 
 /* 7-Day Vertical Array */
+/* Next 5 Days Refined Layout */
 .daily-forecast-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding-top: 0.5rem;
-  min-height: 400px;
-  /* CLS Prevention */
+  gap: 0.75rem;
+  padding-top: 1rem;
+  min-height: 480px;
   contain: layout;
 }
 
-.daily-forecast-row {
-  display: grid;
-  grid-template-columns: 80px 40px 60px 1fr;
+.df-header-row {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
-  transition: background 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, box-shadow 0.3s ease;
-  cursor: default;
+  padding: 0 1.25rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.4;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-@media (hover: hover) {
-  .daily-forecast-row:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.15);
-    transform: translateX(6px);
-    box-shadow: -4px 8px 16px rgba(0, 0, 0, 0.15);
+.df-header-row .df-date-group {
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.df-header-row .df-icon-spacer {
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.df-header-row .df-condition-text {
+  flex: 1;
+  padding-left: 1.5rem;
+  display: none;
+  text-align: left;
+}
+
+@media (min-width: 420px) {
+  .df-header-row .df-condition-text {
+    display: block;
   }
+}
+
+.df-pop-header {
+  width: 45px;
+  text-align: right;
+  margin-right: 1.5rem;
+  flex-shrink: 0;
+}
+
+.df-temps-header {
+  width: 80px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.daily-forecast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.daily-forecast-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(8px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.df-date-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+  gap: 2px;
+}
+
+.df-day-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.df-date-label {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.df-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.df-condition-text {
+  flex: 1;
+  padding-left: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.7;
+  display: none;
+  /* Hide on small mobile, show via media query */
+}
+
+@media (min-width: 420px) {
+  .df-condition-text {
+    display: block;
+  }
+}
+
+.df-pop {
+  font-size: 0.8rem;
+  color: #4facfe;
+  font-weight: 600;
+  min-width: 45px;
+  text-align: right;
+  margin-right: 1.5rem;
+}
+
+.pop-icon {
+  font-size: 0.7rem;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+.df-temps {
+  display: flex;
+  gap: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  min-width: 80px;
+  justify-content: flex-end;
+}
+
+.temp-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.temp-type-label {
+  font-size: 0.55rem;
+  font-weight: 800;
+  opacity: 0.3;
+  margin-bottom: -2px;
+}
+
+.df-temps .max {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fff;
+}
+
+.df-temps .min {
+  opacity: 0.4;
+  font-weight: 400;
+  font-size: 1rem;
 }
 
 @media (hover: hover) {

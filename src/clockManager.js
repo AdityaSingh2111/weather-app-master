@@ -19,6 +19,22 @@ export const getShortDayName = (unixSeconds, offsetSeconds = 0) => {
 };
 
 /**
+ * Gets a long weekday name from a unix timestamp.
+ */
+export const getLongDayName = (unixSeconds, offsetSeconds = 0) => {
+    const localDate = new Date((unixSeconds + offsetSeconds) * 1000);
+    return localDate.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+};
+
+/**
+ * Gets a numeric date string (e.g. "Sep 22") from a unix timestamp.
+ */
+export const getDateString = (unixSeconds, offsetSeconds = 0) => {
+    const localDate = new Date((unixSeconds + offsetSeconds) * 1000);
+    return localDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+};
+
+/**
  * Gets a short hour label from a unix timestamp.
  */
 export const getShortHour = (unixSeconds, offsetSeconds = 0) => {
