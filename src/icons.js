@@ -5,7 +5,7 @@ const SVGS = {
     clear: `
     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="50" cy="50" r="20" fill="currentColor" opacity="0.9"/>
-        <path d="M50 15V25 M50 75V85 M15 50H25 M75 50H85 M25 25L32 32 M68 68L75 75 M25 75L32 68 M68 25L75 32" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        <path d="M50 15V25 M50 75V85 M15 50H25 M75 50H85 M25 25L32 32 M68 68L75 75 M25 75L32 68 M68 32L75 25" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
         <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="20s" repeatCount="indefinite"/>
     </svg>`,
     cloud: `
