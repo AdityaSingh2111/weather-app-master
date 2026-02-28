@@ -650,7 +650,7 @@ h3 {
 
 .sun-indicator {
   /* Transformed dynamically by JS */
-  transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
   transform-origin: 0 0;
 }
 
@@ -692,7 +692,7 @@ h3 {
 .weather-icon {
   width: clamp(80px, 15vw, 140px);
   height: clamp(80px, 15vw, 140px);
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }

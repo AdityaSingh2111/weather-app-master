@@ -5,13 +5,15 @@ const SVGS = {
     clear: `
     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="50" cy="50" r="20" fill="currentColor" opacity="0.9"/>
-        <path d="M50 15V25 M50 75V85 M15 50H25 M75 50H85 M25 25L32 32 M68 68L75 75 M25 75L32 68 M68 32L75 25" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="20s" repeatCount="indefinite"/>
+        <path d="M50 15V25 M50 75V85 M15 50H25 M75 50H85 M25 25L32 32 M68 68L75 75 M25 75L32 68 M68 32L75 25" stroke="currentColor" stroke-width="4" stroke-linecap="round">
+            <animate attributeName="opacity" values="0.7; 1; 0.7" dur="4s" repeatCount="indefinite" />
+        </path>
+        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="60s" repeatCount="indefinite"/>
     </svg>`,
     cloud: `
     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M30 65 C15 65 15 45 30 45 C30 25 60 25 70 40 C85 40 85 65 70 65 Z" fill="currentColor" opacity="0.9"/>
-        <animateTransform attributeName="transform" type="translate" values="-2,0; 2,0; -2,0" dur="6s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="-2,0; 2,0; -2,0" dur="12s" repeatCount="indefinite"/>
     </svg>`,
     rain: `
     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
