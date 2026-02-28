@@ -39,7 +39,6 @@ export const addCity = (city) => {
 
     // Check limit
     if (cities.length >= MAX_CITIES) {
-        alert(`You can only save up to ${MAX_CITIES} cities. Please remove one first.`);
         return false;
     }
 

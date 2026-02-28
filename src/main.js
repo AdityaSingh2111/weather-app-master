@@ -11,6 +11,7 @@ import { initNavigation } from './nav.js';
 
 let activeIndex = 0;
 let citiesDataCache = [];
+let geoInProgress = false;
 
 /**
  * Fetches the weather data for all saved cities and re-renders the ribbon and dashboard.
@@ -145,27 +146,34 @@ const setupSearch = () => {
  */
 const handleGeolocationClick = () => {
     if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
+        setState({ loading: false, error: "Geolocation is not supported by your browser. Please search for a city above." });
         return;
     }
 
+    // Prevent rapid double-clicks
+    if (geoInProgress) return;
+    geoInProgress = true;
+
     const geoBtn = document.getElementById('geo-btn');
     if (geoBtn) {
-        geoBtn.style.opacity = '0.5';
-        geoBtn.style.pointerEvents = 'none';
+        geoBtn.classList.add('geo-loading');
     }
 
-    // Optional: Show a subtle loading indicator or set global loading state
-    setState({ loading: true, error: null });
+    // Only show loading if there's no existing data to display
+    if (!citiesDataCache[activeIndex]) {
+        setState({ loading: true, error: null });
+    }
 
     navigator.geolocation.getCurrentPosition(
         async (position) => {
-            if (geoBtn) {
-                geoBtn.style.opacity = '';
-                geoBtn.style.pointerEvents = '';
-            }
+            if (geoBtn) geoBtn.classList.remove('geo-loading');
+            geoInProgress = false;
+
             const { latitude, longitude } = position.coords;
             try {
+                // Show loading now that we have coords
+                setState({ loading: true, error: null });
+
                 const result = await fetchAllWeatherData(latitude, longitude);
                 const masterData = result.data;
                 const cityObj = {
@@ -183,36 +191,38 @@ const handleGeolocationClick = () => {
                 );
 
                 if (existingIndex !== -1) {
-                    // Switch to existing context
-                    switchDashboardView(existingIndex);
+                    // City exists — reload data and switch to it
+                    activeIndex = existingIndex;
+                    await loadAndRenderCities();
                 } else {
                     const added = addCity(cityObj);
                     if (added || savedCities.length === 0) {
-                        // added cleanly, switch to it
                         activeIndex = getSavedCities().length - 1;
                         await loadAndRenderCities();
                     } else if (!added && savedCities.length >= 5) {
-                        // limit handling handled internally by `addCity` which emits its own alert
-                        setState({ ...citiesDataCache[activeIndex].state, loading: false });
+                        // Limit reached — show inline message, not blocking alert
+                        if (citiesDataCache[activeIndex]) {
+                            setState({ ...citiesDataCache[activeIndex].state, loading: false });
+                        } else {
+                            setState({ loading: false, error: "City limit reached (5 max). Remove one to add a new city." });
+                        }
                     }
                 }
             } catch (err) {
                 if (citiesDataCache[activeIndex]) {
                     setState({ ...citiesDataCache[activeIndex].state, loading: false });
                 } else {
-                    setState({ loading: false, error: "Unable to retrieve meteorological data for your coordinate." });
+                    setState({ loading: false, error: "Unable to retrieve weather data for your location. Please try searching instead." });
                 }
-                alert("Unable to retrieve meteorological data for your coordinate.");
             }
         },
         (err) => {
-            if (geoBtn) {
-                geoBtn.style.opacity = '';
-                geoBtn.style.pointerEvents = '';
-            }
-            let errorMsg = "Unable to retrieve your location.";
+            if (geoBtn) geoBtn.classList.remove('geo-loading');
+            geoInProgress = false;
+
+            let errorMsg = "Unable to retrieve your location. Please search for a city above.";
             if (err.code === err.PERMISSION_DENIED) {
-                errorMsg = "Location access was denied. Please allow location permissions in your browser.";
+                errorMsg = "Location access was denied. Please allow location permissions or search for a city above.";
             }
 
             if (citiesDataCache[activeIndex]) {
@@ -220,7 +230,6 @@ const handleGeolocationClick = () => {
             } else {
                 setState({ loading: false, error: errorMsg });
             }
-            alert(errorMsg);
         }
     );
 };
@@ -270,7 +279,8 @@ const init = async () => {
     if (savedCities.length > 0) {
         await loadAndRenderCities();
     } else {
-        handleGeolocationClick();
+        // Show a welcoming empty state instead of auto-firing geolocation
+        setState({ loading: false, error: "Welcome to Mausam! Search for a city above or tap the location button to get started." });
     }
 };
 

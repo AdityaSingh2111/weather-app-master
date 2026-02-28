@@ -33,14 +33,31 @@ const elements = {
 };
 
 export const animateDashboardTransition = (callback) => {
-    elements.dashboardCard.classList.add('city-transitioning');
+    const card = elements.dashboardCard;
+    if (!card) { callback(); return; }
 
-    setTimeout(() => {
+    // Fast fade-out
+    card.classList.add('city-transitioning');
+
+    const onFadeOut = () => {
+        card.removeEventListener('transitionend', onFadeOut);
+        // Apply new data while hidden
         callback();
-        setTimeout(() => {
-            elements.dashboardCard.classList.remove('city-transitioning');
-        }, 50);
-    }, 200);
+        // Force re-reveal all sections immediately
+        document.querySelectorAll('.dash-section').forEach(s => s.classList.add('revealed'));
+        // Trigger reflow then fade back in
+        void card.offsetHeight;
+        card.classList.remove('city-transitioning');
+    };
+
+    card.addEventListener('transitionend', onFadeOut, { once: true });
+
+    // Safety fallback in case transitionend doesn't fire (e.g., reduced-motion)
+    setTimeout(() => {
+        if (card.classList.contains('city-transitioning')) {
+            onFadeOut();
+        }
+    }, 350);
 };
 
 const easeOutCubic = x => 1 - Math.pow(1 - x, 3);
