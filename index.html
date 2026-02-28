@@ -133,7 +133,8 @@
     </div>
   </div>
   <div id="error" class="hidden cinematic-container" style="z-index: 50;">
-    <div class="content-layer" style="justify-content: center; align-items: center; display: flex; height: 100vh;">
+    <div class="content-layer"
+      style="justify-content: center; align-items: center; display: flex; height: 100vh; padding-top: 140px;">
       <div class="dashboard-card"
         style="align-items: center; text-align: center; max-width: 500px; padding: 4rem 2rem;">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="64" height="64"
@@ -145,6 +146,19 @@
         </h2>
         <p id="error-text" style="font-size: 1rem; opacity: 0.6; line-height: 1.5;">Please use the search bar above to
           select a city and begin tracking weather.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Persistent Search Bar: Always visible regardless of loading/error/active state -->
+  <div id="persistent-search" class="persistent-search-layer">
+    <div class="city-management-bar">
+      <div class="search-wrapper">
+        <input type="text" id="city-search" placeholder="Search for a city..." autocomplete="off">
+        <div id="search-results" class="search-results hidden"></div>
+      </div>
+      <div id="saved-cities-list" class="saved-cities-list">
+        <!-- JS Inject Saved City Previews -->
       </div>
     </div>
   </div>
@@ -185,17 +199,7 @@
       </a>
     </nav>
 
-    <div class="content-layer">
-      <!-- Top: City Management -->
-      <div class="city-management-bar">
-        <div class="search-wrapper">
-          <input type="text" id="city-search" placeholder="Search for a city..." autocomplete="off">
-          <div id="search-results" class="search-results hidden"></div>
-        </div>
-        <div id="saved-cities-list" class="saved-cities-list">
-          <!-- JS Inject Saved City Previews -->
-        </div>
-      </div>
+    <div class="content-layer" style="padding-top: clamp(120px, 20dvh, 160px);">
 
       <div id="dashboard-card" class="dashboard-card scrollable-card">
 

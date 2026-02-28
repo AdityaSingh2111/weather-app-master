@@ -15,10 +15,20 @@ export const initNavigation = () => {
             const targetId = btn.getAttribute('data-target');
             const targetSection = document.getElementById(targetId);
 
-            if (targetSection) {
-                // Ensure smooth scroll calculation
-                // By scrolling the specific child into the parent's view
-                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (targetSection && scrollContainer) {
+                // Determine precision offset within the scrollable parent 
+                // to prevent mobile Safari/Chrome from scrolling the whole document body
+                const containerRect = scrollContainer.getBoundingClientRect();
+                const targetRect = targetSection.getBoundingClientRect();
+                const currentScroll = scrollContainer.scrollTop;
+
+                // Calculate absolute position within container, minus a top buffer
+                const targetScroll = (targetRect.top - containerRect.top) + currentScroll - 20;
+
+                scrollContainer.scrollTo({
+                    top: targetScroll,
+                    behavior: 'smooth'
+                });
             }
         });
     });
