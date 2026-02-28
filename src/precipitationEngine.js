@@ -19,8 +19,12 @@ export const renderPrecipitation = (ctx, canvas, timestamp, state) => {
     else if (id >= 300 && id < 600) { currentType = 'rain'; targetParticleCount = 500; }
     else if (id >= 600 && id < 700) { currentType = 'snow'; targetParticleCount = 300; }
 
-    // Optimization for mobile (halve particles)
-    if (window.innerWidth <= 768) targetParticleCount = Math.floor(targetParticleCount / 2);
+    // Optimization for mobile (strict limits)
+    if (window.innerWidth <= 768) {
+        if (currentType === 'storm') targetParticleCount = 150;
+        else if (currentType === 'rain') targetParticleCount = 100;
+        else targetParticleCount = 80;
+    }
 
     // Rebuild pool if weather changes
     if (currentType !== lastWeatherType) {

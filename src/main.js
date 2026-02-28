@@ -199,22 +199,17 @@ const init = async () => {
     setState({ loading: true, error: null });
 
     // Handle Offline/Online Status
+    const offlineBanner = document.getElementById('offline-banner');
+    if (offlineBanner) offlineBanner.classList.add('hidden');
+
     window.addEventListener('online', () => {
-        const banner = document.getElementById('offline-banner');
-        if (banner) banner.classList.add('hidden');
+        if (offlineBanner) offlineBanner.classList.add('hidden');
         loadAndRenderCities(); // Refresh data now that we're back
     });
 
     window.addEventListener('offline', () => {
-        const banner = document.getElementById('offline-banner');
-        if (banner) banner.classList.remove('hidden');
+        if (offlineBanner) offlineBanner.classList.remove('hidden');
     });
-
-    // Check initial state
-    if (!navigator.onLine) {
-        const banner = document.getElementById('offline-banner');
-        if (banner) banner.classList.remove('hidden');
-    }
 
     const savedCities = getSavedCities();
 

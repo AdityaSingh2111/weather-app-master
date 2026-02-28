@@ -17,8 +17,8 @@ export const renderNightSky = (ctx, canvas, timestamp, cloudCoverPercent) => {
             stars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                size: Math.random() > 0.9 ? 1.5 : 0.8,
-                baseAlpha: Math.random() * 0.5 + 0.1,
+                size: Math.random() > 0.9 ? 1.2 : 0.6,
+                baseAlpha: Math.random() * 0.3 + 0.05,
                 // Twinkle phase offset
                 phase: Math.random() * Math.PI * 2
             });

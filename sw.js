@@ -1,48 +1,37 @@
-const CACHE_NAME = 'mausam-app-v3';
+const CACHE_NAME = 'mausam-app-v5';
 const DYNAMIC_CACHE = 'mausam-dynamic-v1';
 const IMAGE_CACHE = 'mausam-images-v1';
 const MAX_DYNAMIC_ENTRIES = 10;
 const MAX_IMAGE_ENTRIES = 30;
 
-// App Shell assets to preload immediately
+// App Shell minimal core. All JS/CSS is cached continuously on the fly via the fetch intersection.
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
-    '/style.css',
     '/manifest.json',
     '/mausam-icon-192.png',
-    '/mausam-icon-512.png',
-    '/robots.txt',
-    '/sitemap.xml',
-    '/src/main.js',
-    '/src/api.js',
-    '/src/atmosphere.js',
-    '/src/solarModel.js',
-    '/src/skyRenderer.js',
-    '/src/cloudEngine.js',
-    '/src/precipitationEngine.js',
-    '/src/cache.js',
-    '/src/cities.js',
-    '/src/cityRibbon.js',
-    '/src/clockManager.js',
-    '/src/forecastUI.js',
-    '/src/icons.js',
-    '/src/nav.js',
-    '/src/parallax.js',
-
-    '/src/stars.js',
-    '/src/state.js',
-    '/src/searchUI.js',
-    '/src/themeEngine.js',
-    '/src/timeEngine.js',
-    '/src/transform.js',
-    '/src/ui.js'
+    '/mausam-icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+            .then(async (cache) => {
+                // Force bypass of the browser's HTTP cache during SW installation
+                const cachePromises = ASSETS_TO_CACHE.map(async (url) => {
+                    const req = new Request(`${url}?bust=${Date.now()}`, { cache: 'no-store' });
+                    try {
+                        const response = await fetch(req);
+                        if (response.ok) {
+                            // Store under the original URL key, not the dusted URL
+                            await cache.put(url, response);
+                        }
+                    } catch (err) {
+                        console.error('[SW] Failed to cache', url, err);
+                    }
+                });
+                await Promise.all(cachePromises);
+            })
             .then(() => self.skipWaiting())
             .catch(err => console.error('[SW] Install cache.addAll failed:', err))
     );
@@ -113,7 +102,22 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // ─── Strategy: App Shell → Cache First, fallback network ────────────
+    // ─── Strategy: App Shell (Navigation) → Network First, fallback cache ────────────
+    if (event.request.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html') {
+        event.respondWith((async () => {
+            try {
+                const networkResponse = await fetch(event.request);
+                const cache = await caches.open(CACHE_NAME);
+                cache.put(event.request, networkResponse.clone());
+                return networkResponse;
+            } catch (error) {
+                return caches.match('/index.html');
+            }
+        })());
+        return;
+    }
+
+    // ─── Strategy: Static Assets → Cache First, fallback network ────────────
     event.respondWith((async () => {
         const cachedResponse = await caches.match(event.request);
         if (cachedResponse) return cachedResponse;
@@ -128,9 +132,6 @@ self.addEventListener('fetch', (event) => {
 
             return networkResponse;
         } catch (error) {
-            if (event.request.mode === 'navigate') {
-                return caches.match('/index.html');
-            }
             return new Response('', { status: 404, statusText: 'Offline' });
         }
     })());
