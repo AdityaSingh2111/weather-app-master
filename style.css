@@ -328,13 +328,13 @@ h3 {
 .search-wrapper {
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: clamp(300px, 80vw, 600px);
   margin: 0 auto;
 }
 
 #city-search {
   width: 100%;
-  padding: 1rem 1.5rem;
+  padding: clamp(1rem, 3vw, 1.25rem) clamp(1.25rem, 4vw, 2rem);
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -342,14 +342,15 @@ h3 {
   border-radius: 100px;
   color: white;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: clamp(1rem, 3vw, 1.15rem);
   outline: none;
-  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #city-search:focus {
   background: rgba(0, 0, 0, 0.5);
   border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 #city-search::placeholder {
@@ -365,20 +366,21 @@ h3 {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  border-radius: clamp(16px, 3vw, 24px);
   overflow: hidden;
   z-index: 100;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
 
 .search-result-item {
-  padding: 1rem 1.5rem;
+  padding: clamp(0.75rem, 3vw, 1.25rem) clamp(1.25rem, 4vw, 2rem);
   cursor: pointer;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: clamp(0.95rem, 3vw, 1.1rem);
 }
 
 .search-result-item:hover {
@@ -1038,10 +1040,7 @@ h3 {
     max-width: 100%;
   }
 
-  #city-search {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-  }
+  /* Remove down-scaling of search bar on small mobile to keep it prominent */
 }
 
 /* Ultrawide */
