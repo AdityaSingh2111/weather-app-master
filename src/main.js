@@ -106,7 +106,7 @@ const handleCityRemove = (index) => {
         // Edge Case: Removed last active city
         citiesDataCache = [];
         renderCityPreviews([], 0, handleCityClick, handleCityRemove);
-        setState({ loading: false, error: "No cities saved. Please search for a city above to get started." });
+        setState({ loading: false, error: "No cities saved. Please search for a city above or use current location to get started." });
     } else {
         // Adjust index and reload
         if (activeIndex === index) activeIndex = Math.max(0, index - 1);
@@ -141,37 +141,86 @@ const setupSearch = () => {
 };
 
 /**
- * Fallback mechanism if the user has no saved cities on first launch.
+ * Handles fetching weather by Geolocation
  */
-const initializeWithGeolocation = () => {
+const handleGeolocationClick = () => {
     if (!navigator.geolocation) {
-        setState({ loading: false, error: "Geolocation is not supported by your browser. Please search for a city." });
+        alert("Geolocation is not supported by your browser.");
         return;
     }
 
+    const geoBtn = document.getElementById('geo-btn');
+    if (geoBtn) {
+        geoBtn.style.opacity = '0.5';
+        geoBtn.style.pointerEvents = 'none';
+    }
+
+    // Optional: Show a subtle loading indicator or set global loading state
+    setState({ loading: true, error: null });
+
     navigator.geolocation.getCurrentPosition(
         async (position) => {
+            if (geoBtn) {
+                geoBtn.style.opacity = '';
+                geoBtn.style.pointerEvents = '';
+            }
             const { latitude, longitude } = position.coords;
             try {
                 const result = await fetchAllWeatherData(latitude, longitude);
                 const masterData = result.data;
-                addCity({
+                const cityObj = {
                     lat: latitude,
                     lon: longitude,
                     name: masterData.weatherData.name,
                     country: masterData.weatherData.sys.country
-                });
-                await loadAndRenderCities();
+                };
+
+                // Try to find if city already exists
+                const savedCities = getSavedCities();
+                const existingIndex = savedCities.findIndex(c =>
+                    (c.name === cityObj.name && c.country === cityObj.country) ||
+                    (Math.abs(c.lat - cityObj.lat) < 0.05 && Math.abs(c.lon - cityObj.lon) < 0.05)
+                );
+
+                if (existingIndex !== -1) {
+                    // Switch to existing context
+                    switchDashboardView(existingIndex);
+                } else {
+                    const added = addCity(cityObj);
+                    if (added || savedCities.length === 0) {
+                        // added cleanly, switch to it
+                        activeIndex = getSavedCities().length - 1;
+                        await loadAndRenderCities();
+                    } else if (!added && savedCities.length >= 5) {
+                        // limit handling handled internally by `addCity` which emits its own alert
+                        setState({ ...citiesDataCache[activeIndex].state, loading: false });
+                    }
+                }
             } catch (err) {
-                setState({ loading: false, error: "Unable to retrieve meteorological data for your current coordinate." });
+                if (citiesDataCache[activeIndex]) {
+                    setState({ ...citiesDataCache[activeIndex].state, loading: false });
+                } else {
+                    setState({ loading: false, error: "Unable to retrieve meteorological data for your coordinate." });
+                }
+                alert("Unable to retrieve meteorological data for your coordinate.");
             }
         },
         (err) => {
+            if (geoBtn) {
+                geoBtn.style.opacity = '';
+                geoBtn.style.pointerEvents = '';
+            }
             let errorMsg = "Unable to retrieve your location.";
             if (err.code === err.PERMISSION_DENIED) {
-                errorMsg = "Location access was denied. Please search for a city manually to get started.";
+                errorMsg = "Location access was denied. Please allow location permissions in your browser.";
             }
-            setState({ loading: false, error: errorMsg });
+
+            if (citiesDataCache[activeIndex]) {
+                setState({ ...citiesDataCache[activeIndex].state, loading: false });
+            } else {
+                setState({ loading: false, error: errorMsg });
+            }
+            alert(errorMsg);
         }
     );
 };
@@ -196,6 +245,11 @@ const init = async () => {
     subscribe(updateUI);
     setupSearch();
 
+    const geoBtn = document.getElementById('geo-btn');
+    if (geoBtn) {
+        geoBtn.addEventListener('click', handleGeolocationClick);
+    }
+
     setState({ loading: true, error: null });
 
     // Handle Offline/Online Status
@@ -216,7 +270,7 @@ const init = async () => {
     if (savedCities.length > 0) {
         await loadAndRenderCities();
     } else {
-        initializeWithGeolocation();
+        handleGeolocationClick();
     }
 };
 
