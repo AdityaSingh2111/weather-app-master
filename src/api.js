@@ -67,7 +67,7 @@ export const fetchAllWeatherData = async (lat, lon) => {
 export const searchCityList = async (query) => {
     try {
         if (!query.trim()) return [];
-        const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${API_KEY}`);
+        const response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${API_KEY}`);
 
         if (!response.ok) {
             throw new Error(`Search failed: ${response.status}`);

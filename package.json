@@ -1,19 +1,9 @@
 {
-  "name": "weather-app-master",
-  "version": "1.0.0",
-  "description": "create a weather app in html/css/js",
-  "main": "server.js",
+  "name": "mausam-pwa",
+  "version": "2.0.0",
+  "description": "Premium Cinematic Weather PWA",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx serve -l 3001"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "axios": "^1.13.6",
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1"
-  }
+  "dependencies": {}
 }
