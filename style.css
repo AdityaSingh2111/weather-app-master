@@ -16,14 +16,16 @@
 html,
 body {
   font-family: 'Inter', -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
-  /* Prevent scrolling, true cinematic feel */
+  overflow-x: hidden;
   background-color: #1a1a1a;
-  /* Dark fallback */
   color: var(--text-color);
   transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .hidden {
@@ -77,8 +79,8 @@ body {
 
 .skeleton-circle {
   border-radius: 50%;
-  width: 140px;
-  height: 140px;
+  width: clamp(80px, 15vw, 140px);
+  height: clamp(80px, 15vw, 140px);
 }
 
 /* State Messages */
@@ -124,6 +126,7 @@ body {
   color: #ff5252;
   background-color: rgba(255, 235, 238, 0.1);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;
   border: 1px solid rgba(255, 82, 82, 0.3);
 }
@@ -131,8 +134,9 @@ body {
 /* Cinematic Container & Layers */
 .cinematic-container {
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -267,7 +271,9 @@ body {
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 2rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 /* Typography */
@@ -281,17 +287,17 @@ h3 {
 /* Dashboard Card Configuration */
 .dashboard-card {
   width: 100%;
-  max-width: 1000px;
+  max-width: clamp(320px, 90vw, 1000px);
   background: rgba(10, 15, 25, 0.55);
   backdrop-filter: blur(48px) saturate(1.2);
   -webkit-backdrop-filter: blur(48px) saturate(1.2);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 32px;
-  padding: 3rem;
+  border-radius: clamp(16px, 3vw, 32px);
+  padding: clamp(1.25rem, 4vw, 3rem);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: clamp(1.5rem, 4vw, 3rem);
   transform: perspective(1200px) rotateX(calc(var(--mouse-y, 0) * 1.5deg)) rotateY(calc(var(--mouse-x, 0) * -1.5deg)) translateY(0);
   transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), border 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform, opacity;
@@ -312,8 +318,8 @@ h3 {
 /* City Management System */
 .city-management-bar {
   width: 100%;
-  max-width: 1000px;
-  margin-bottom: 2rem;
+  max-width: clamp(320px, 90vw, 1000px);
+  margin-bottom: clamp(1rem, 3vw, 2rem);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -410,11 +416,6 @@ h3 {
   white-space: nowrap;
 }
 
-.city-preview:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15), 0 0 12px rgba(255, 255, 255, 0.05);
-}
 
 .city-preview.active {
   background: rgba(255, 255, 255, 0.25);
@@ -439,10 +440,6 @@ h3 {
   transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.city-preview-remove:hover {
-  opacity: 1;
-  background: rgba(255, 0, 0, 0.5);
-}
 
 .dashboard-top {
   display: grid;
@@ -467,9 +464,9 @@ h3 {
 }
 
 .date-text {
-  font-size: 1.1rem;
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
   opacity: 0.8;
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(0.75rem, 2vw, 1.5rem);
   font-weight: 400;
 }
 
@@ -538,8 +535,8 @@ h3 {
 }
 
 .weather-icon {
-  width: 140px;
-  height: 140px;
+  width: clamp(80px, 15vw, 140px);
+  height: clamp(80px, 15vw, 140px);
   margin-bottom: 1rem;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -552,7 +549,7 @@ h3 {
 }
 
 .weather-desc {
-  font-size: 1.75rem;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
   font-weight: 500;
   text-transform: capitalize;
   letter-spacing: -0.01em;
@@ -579,9 +576,9 @@ h3 {
 }
 
 .feels-like {
-  font-size: 1.1rem;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   opacity: 0.8;
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1rem, 3vw, 2rem);
   font-variant-numeric: tabular-nums;
 }
 
@@ -640,11 +637,13 @@ h3 {
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.metric-box:hover {
-  transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+@media (hover: hover) {
+  .metric-box:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
 }
 
 .metric-box .metric-label {
@@ -765,11 +764,31 @@ h3 {
   cursor: default;
 }
 
-.daily-forecast-row:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateX(6px);
-  box-shadow: -4px 8px 16px rgba(0, 0, 0, 0.15);
+@media (hover: hover) {
+  .daily-forecast-row:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateX(6px);
+    box-shadow: -4px 8px 16px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@media (hover: hover) {
+  .city-preview:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15), 0 0 12px rgba(255, 255, 255, 0.05);
+  }
+
+  .city-preview-remove:hover {
+    opacity: 1;
+    background: rgba(255, 0, 0, 0.5);
+  }
+
+  .nav-btn:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .df-day-name {
@@ -840,10 +859,6 @@ h3 {
   text-decoration: none;
 }
 
-.nav-btn:hover {
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.1);
-}
 
 .nav-btn.active {
   color: #fff;
@@ -862,9 +877,11 @@ h3 {
 /* Make Dashboard scrollable */
 .scrollable-card {
   max-height: 85vh;
+  max-height: 85dvh;
   overflow-y: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .scrollable-card::-webkit-scrollbar {
@@ -893,36 +910,51 @@ h3 {
 }
 
 /* Responsive Adjustments */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .advanced-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .sidebar {
     top: auto;
-    bottom: 1.5rem;
-    right: 50%;
-    transform: translateX(50%);
+    bottom: 0;
+    right: 0;
+    left: 0;
+    transform: none;
     flex-direction: row;
+    justify-content: center;
     padding: 0.5rem 1rem;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
     gap: 0.5rem;
+    border-radius: 0;
+    width: 100%;
   }
 
   .nav-btn {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
   }
 
   .scrollable-card {
     max-height: calc(100vh - 120px);
+    max-height: calc(100dvh - 120px);
     margin-bottom: 80px;
   }
 
   .dashboard-card {
-    padding: 2rem;
-    gap: 2rem;
+    padding: clamp(1rem, 4vw, 2rem);
+    gap: clamp(1.25rem, 3vw, 2rem);
   }
 
   .dashboard-top {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 3rem;
+    gap: 2rem;
   }
 
   .dash-left,
@@ -955,6 +987,71 @@ h3 {
 
   .time-text {
     margin-bottom: 1rem;
+  }
+
+  .solar-arc-container {
+    width: clamp(140px, 50vw, 200px);
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .dashboard-card {
+    border-radius: 16px;
+    padding: 1rem;
+  }
+
+  .dashboard-top {
+    gap: 1.5rem;
+  }
+
+  .hero-temp {
+    min-height: auto;
+  }
+
+  .advanced-metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+  }
+
+  .metric-box {
+    padding: 0.75rem 0.5rem;
+    border-radius: 12px;
+  }
+
+  .forecast-day {
+    min-width: 70px;
+    padding: 0.75rem;
+  }
+
+  .daily-forecast-row {
+    grid-template-columns: 50px 32px 45px 1fr;
+    padding: 0.4rem 0.5rem;
+    border-radius: 10px;
+  }
+
+  .city-management-bar {
+    gap: 1rem;
+  }
+
+  .search-wrapper {
+    max-width: 100%;
+  }
+
+  #city-search {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Ultrawide */
+@media (min-width: 1200px) {
+  .dashboard-card {
+    max-width: 1100px;
+  }
+
+  .city-management-bar {
+    max-width: 1100px;
   }
 }
 
