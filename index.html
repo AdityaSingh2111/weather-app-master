@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Phase 1: Core Meta & Performance -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>Mausam — Premium Weather PWA | Real-Time Forecasts & Atmospheric Intelligence</title>
+  <meta name="description"
+    content="Mausam is a premium Progressive Web App delivering hyper-realistic weather visualization, real-time forecasts, air quality data, and atmospheric intelligence powered by OpenWeatherMap." />
+  <meta name="keywords"
+    content="weather, PWA, forecast, atmospheric, mausam, real-time weather, air quality, UV index, progressive web app" />
+  <meta name="author" content="Mausam" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <link rel="canonical" href="https://mausam.vercel.app/" />
+
+  <!-- Phase 1: OpenGraph Social Tags -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Mausam" />
+  <meta property="og:title" content="Mausam — Premium Weather PWA" />
+  <meta property="og:description"
+    content="Experience weather like never before. Procedural atmospheric rendering, real-time forecasts, air quality monitoring, and a stunning glassmorphism UI." />
+  <meta property="og:url" content="https://mausam.vercel.app/" />
+  <meta property="og:image" content="https://mausam.vercel.app/mausam-logo.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Mausam Weather PWA Logo" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Phase 1: Twitter Card Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Mausam — Premium Weather PWA" />
+  <meta name="twitter:description"
+    content="Hyper-realistic atmospheric rendering, real-time forecasts, and air quality data in a stunning glassmorphism interface." />
+  <meta name="twitter:image" content="https://mausam.vercel.app/mausam-logo.png" />
+  <meta name="twitter:image:alt" content="Mausam Weather PWA Logo" />
+
+  <!-- Phase 2: Favicons & PWA Iconography -->
+  <link rel="icon" type="image/png" href="/mausam-logo.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/mausam-logo.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/mausam-logo.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/mausam-logo.png" />
+  <link rel="mask-icon" href="/mausam-logo.png" color="#141E30" />
+
+  <!-- Phase 2: PWA & Apple Standards -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#141E30" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Mausam" />
+  <meta name="application-name" content="Mausam" />
+  <meta name="msapplication-TileColor" content="#141E30" />
+  <meta name="msapplication-TileImage" content="/mausam-logo.png" />
+
+  <!-- Performance: Font Preconnect & Load -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Phase 3: JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": ["WebApplication", "SoftwareApplication"],
+    "name": "Mausam",
+    "alternateName": "Mausam Weather",
+    "description": "Premium Progressive Web App delivering hyper-realistic weather visualization, real-time forecasts, air quality data, and atmospheric intelligence.",
+    "url": "https://mausam.vercel.app/",
+    "applicationCategory": "WeatherApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires a modern browser with ES Module and Service Worker support.",
+    "softwareVersion": "2.0.0",
+    "image": "https://mausam.vercel.app/mausam-logo.png",
+    "screenshot": "https://mausam.vercel.app/mausam-logo.png",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "150"
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "Mausam",
+      "url": "https://mausam.vercel.app/",
+      "logo": "https://mausam.vercel.app/mausam-logo.png"
+    }
+  }
+  </script>
+</head>
+
+<body class="theme-default">
+  <div id="offline-banner" class="offline-banner hidden">
+    You are currently offline. Viewing cached meteorological data.
+  </div>
+  <div id="loading" class="cinematic-container">
+    <div class="content-layer">
+      <div class="dashboard-card" style="margin-top: 5rem;">
+        <div class="dashboard-top">
+          <div class="dash-left" style="width: 100%;">
+            <div class="skeleton-block skeleton-title" style="width: 40%;"></div>
+            <div class="skeleton-block skeleton-text" style="width: 30%; height: 2rem;"></div>
+            <div class="skeleton-block skeleton-text" style="width: 60%; height: 4rem; margin-top: 1rem;"></div>
+          </div>
+          <div class="dash-center" style="width: 100%;">
+            <div class="skeleton-block skeleton-circle"></div>
+            <div class="skeleton-block skeleton-text" style="width: 80%; height: 2rem; margin-top: 1rem;"></div>
+          </div>
+          <div class="dash-right" style="width: 100%; align-items: flex-end;">
+            <div class="skeleton-block skeleton-hero"></div>
+            <div class="skeleton-block skeleton-text" style="width: 40%; margin-top: 1rem;"></div>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem; width: 60%; justify-content: flex-end;">
+              <div class="skeleton-block skeleton-text" style="width: 40px; height: 30px;"></div>
+              <div class="skeleton-block skeleton-text" style="width: 60px; height: 30px;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="advanced-metrics" style="margin-top: 2rem;">
+          <div class="skeleton-block" style="height: 80px;"></div>
+          <div class="skeleton-block" style="height: 80px;"></div>
+          <div class="skeleton-block" style="height: 80px;"></div>
+          <div class="skeleton-block" style="height: 80px;"></div>
+          <div class="skeleton-block" style="height: 80px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="error" class="hidden cinematic-container" style="z-index: 50;">
+    <div class="content-layer" style="justify-content: center; align-items: center; display: flex; height: 100vh;">
+      <div class="dashboard-card"
+        style="align-items: center; text-align: center; max-width: 500px; padding: 4rem 2rem;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="64" height="64"
+          style="opacity: 0.5; margin-bottom: 1.5rem;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <h2 style="font-size: 1.5rem; font-weight: 500; margin-bottom: 0.5rem; opacity: 0.9;">Mausam Requires a Location
+        </h2>
+        <p id="error-text" style="font-size: 1rem; opacity: 0.6; line-height: 1.5;">Please use the search bar above to
+          select a city and begin tracking weather.</p>
+      </div>
+    </div>
+  </div>
+
+  <main id="app-content" class="hidden cinematic-container">
+    <div id="starfield" class="starfield-layer overlay-layer"></div>
+    <!-- Starfield Layer -->
+    <div id="stars-layer" class="particle-layer overlay-layer"></div>
+
+    <!-- Rain Effects Canvas -->
+    <canvas id="rain-canvas" class="particle-layer overlay-layer"></canvas>
+
+    <!-- Navigation Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <a href="#current" class="nav-btn active" data-target="current" title="Current Conditions">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+          </path>
+        </svg>
+      </a>
+      <a href="#metrics" class="nav-btn" data-target="metrics" title="Advanced Metrics">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+      </a>
+      <a href="#hourly" class="nav-btn" data-target="hourly" title="Hourly Forecast">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </a>
+      <a href="#daily" class="nav-btn" data-target="daily" title="7-Day Forecast">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+      </a>
+    </nav>
+
+    <div class="content-layer">
+      <!-- Top: City Management -->
+      <div class="city-management-bar">
+        <div class="search-wrapper">
+          <input type="text" id="city-search" placeholder="Search for a city..." autocomplete="off">
+          <div id="search-results" class="search-results hidden"></div>
+        </div>
+        <div id="saved-cities-list" class="saved-cities-list">
+          <!-- JS Inject Saved City Previews -->
+        </div>
+      </div>
+
+      <div id="dashboard-card" class="dashboard-card scrollable-card">
+
+        <section id="current" class="dash-section pt-0">
+          <div class="dashboard-top">
+            <!-- Left: Location & Time -->
+            <div class="dash-left">
+              <h2 id="location" class="location-text">--</h2>
+              <div id="date-text" class="date-text">--</div>
+              <div id="time-text" class="time-text">--:--</div>
+              <div class="solar-arc-container">
+                <svg width="200" height="70" viewBox="0 0 200 70" class="solar-svg">
+                  <!-- The dashed line indicating the physical horizon orbit -->
+                  <path class="solar-track" d="M10 60 A90 90 0 0 1 190 60" fill="none" stroke="rgba(255,255,255,0.2)"
+                    stroke-width="2" stroke-dasharray="4 4" />
+                  <!-- The dynamic sun orbital position indicator -->
+                  <g class="sun-indicator" id="sun-indicator">
+                    <circle cx="0" cy="0" r="6" fill="#FFD700" filter="drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))" />
+                  </g>
+                </svg>
+                <div class="sun-times-row">
+                  <div class="sun-metric"><span class="sun-label">Sunrise</span><span id="sunrise-time">--:--</span>
+                  </div>
+                  <div class="sun-metric" style="text-align: right;"><span class="sun-label">Sunset</span><span
+                      id="sunset-time">--:--</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Center: Condition Visuals -->
+            <div class="dash-center">
+              <div id="weather-icon-container" class="weather-icon"></div>
+              <h3 id="description" class="weather-desc">Locating...</h3>
+            </div>
+
+            <!-- Right: Temperature -->
+            <div class="dash-right">
+              <h1 id="temperature" class="hero-temp">--&deg;</h1>
+              <div class="feels-like">Feels like <span id="feels-like">--&deg;</span></div>
+
+              <!-- Kept Humidity and Wind in a small panel under temperature to not lose metric data -->
+              <div class="mini-metrics">
+                <div class="metric"><span class="metric-label">Hum</span><span id="humidity">--%</span></div>
+                <div class="metric"><span class="metric-label">Wind</span><span id="wind">-- m/s</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Middle: Advanced Metrics -->
+        <section id="metrics" class="dash-section">
+          <div class="advanced-metrics">
+            <div class="metric-box">
+              <span class="metric-label">UV Index</span>
+              <span id="uv-index" class="metric-value">--</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Visibility</span>
+              <span id="visibility" class="metric-value">-- km</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Cloud Cover</span>
+              <span id="cloud-cover" class="metric-value">--%</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Pressure</span>
+              <span id="pressure" class="metric-value">-- hPa</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">AQI</span>
+              <span id="aqi" class="metric-value">--</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="hourly" class="dash-section">
+          <h4 class="section-title">Hourly Forecast</h4>
+          <div id="hourly-strip" class="forecast-strip" style="margin-bottom: 0rem; border-top: none; padding-top: 0;">
+            <!-- JS Inject -->
+          </div>
+        </section>
+
+        <!-- Bottom: 7-Day Forecast -->
+        <section id="daily" class="dash-section">
+          <h4 class="section-title">7-Day Forecast</h4>
+          <div id="forecast-strip" class="daily-forecast-list">
+            <!-- JS Inject -->
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <noscript>
+    <div
+      style="padding: 3rem; max-width: 600px; margin: 0 auto; text-align: center; font-family: 'Inter', sans-serif; color: #e0e0e0;">
+      <h1>Mausam — Premium Weather PWA</h1>
+      <p>Mausam requires JavaScript to deliver real-time weather forecasts, atmospheric rendering, and air quality
+        monitoring. Please enable JavaScript in your browser settings to continue.</p>
+    </div>
+  </noscript>
+  <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>

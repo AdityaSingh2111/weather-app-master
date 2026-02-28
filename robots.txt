@@ -1,0 +1,8 @@
+# Mausam Weather PWA
+# https://mausam.vercel.app
+
+User-agent: *
+Allow: /
+Disallow: /src/
+
+Sitemap: https://mausam.vercel.app/sitemap.xml
