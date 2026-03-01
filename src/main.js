@@ -1,7 +1,7 @@
 // Main Entry Point
-import { fetchAllWeatherData, searchCityList } from './api.js';
+import { fetchAllWeatherData, searchCityList, fetchReverseGeocode } from './api.js';
 import { setState, subscribe } from './state.js';
-import { updateUI, bindSearchInput, renderSearchResults, renderCityPreviews, animateDashboardTransition, initUI } from './ui.js';
+import { updateUI, bindSearchInput, renderSearchResults, renderCityPreviews, animateDashboardTransition, initUI, bindDashboardSwipes } from './ui.js';
 import { normalizeWeatherData } from './transform.js';
 import { initTimeEngine } from './timeEngine.js';
 
@@ -35,7 +35,8 @@ const loadAndRenderCities = async () => {
                 masterData.forecastData,
                 masterData.uviData,
                 masterData.aqiData,
-                city.lat
+                city.lat,
+                city.exactName
             );
 
             // Handle SWR Background Revalidation
@@ -46,7 +47,8 @@ const loadAndRenderCities = async () => {
                         freshMasterData.forecastData,
                         freshMasterData.uviData,
                         freshMasterData.aqiData,
-                        city.lat
+                        city.lat,
+                        city.exactName
                     );
 
                     const cacheIndex = citiesDataCache.findIndex(c => c.city.lat === city.lat && c.city.lon === city.lon);
@@ -131,9 +133,14 @@ const setupSearch = () => {
         searchTimeout = setTimeout(async () => {
             const results = await searchCityList(query);
             renderSearchResults(results, async (selectedCity) => {
-                const added = addCity(selectedCity);
+                // For search results, 'name' is usually specific enough, but we can store it as both
+                const cityObj = {
+                    ...selectedCity,
+                    exactName: selectedCity.name // Broad city name as fallback/start
+                };
+                const added = addCity(cityObj);
                 if (added) {
-                    activeIndex = getSavedCities().length - 1; // Slide to the front of new city
+                    activeIndex = getSavedCities().length - 1;
                     await loadAndRenderCities();
                 }
             });
@@ -174,20 +181,31 @@ const handleGeolocationClick = () => {
                 // Show loading now that we have coords
                 setState({ loading: true, error: null });
 
-                const result = await fetchAllWeatherData(latitude, longitude);
+                // Fetch weather and precise name in parallel
+                const [result, geoResult] = await Promise.all([
+                    fetchAllWeatherData(latitude, longitude),
+                    fetchReverseGeocode(latitude, longitude)
+                ]);
+
                 const masterData = result.data;
+
+                // Use reverse geocode name if available, otherwise fallback to weather API name
+                const cityName = geoResult ? geoResult.name : masterData.weatherData.name;
+                const countryCode = geoResult ? geoResult.country : masterData.weatherData.sys.country;
+
                 const cityObj = {
                     lat: latitude,
                     lon: longitude,
-                    name: masterData.weatherData.name,
-                    country: masterData.weatherData.sys.country
+                    name: masterData.weatherData.name, // Broad city (e.g., London)
+                    exactName: cityName, // Precise locality (e.g., Westminster)
+                    country: countryCode
                 };
 
                 // Try to find if city already exists
                 const savedCities = getSavedCities();
                 const existingIndex = savedCities.findIndex(c =>
                     (c.name === cityObj.name && c.country === cityObj.country) ||
-                    (Math.abs(c.lat - cityObj.lat) < 0.05 && Math.abs(c.lon - cityObj.lon) < 0.05)
+                    (Math.abs(c.lat - cityObj.lat) < 0.01 && Math.abs(c.lon - cityObj.lon) < 0.01)
                 );
 
                 if (existingIndex !== -1) {
@@ -230,9 +248,14 @@ const handleGeolocationClick = () => {
             } else {
                 setState({ loading: false, error: errorMsg });
             }
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
         }
     );
-};
+}
 
 const init = async () => {
     // Register PWA Service Worker
@@ -259,6 +282,24 @@ const init = async () => {
     if (geoBtn) {
         geoBtn.addEventListener('click', handleGeolocationClick);
     }
+
+    // Enable horizontal swiping logic for dashboard management
+    bindDashboardSwipes(
+        () => {
+            // Next: Swipe Left
+            if (citiesDataCache.length > 1) {
+                const next = (activeIndex + 1) % citiesDataCache.length;
+                switchDashboardView(next);
+            }
+        },
+        () => {
+            // Previous: Swipe Right
+            if (citiesDataCache.length > 1) {
+                const prev = (activeIndex - 1 + citiesDataCache.length) % citiesDataCache.length;
+                switchDashboardView(prev);
+            }
+        }
+    );
 
     setState({ loading: true, error: null });
 

@@ -630,16 +630,46 @@ h3 {
   border-bottom: none;
 }
 
+/* Base horizontal list styling */
 .saved-cities-list {
   display: flex;
   gap: 0.75rem;
   overflow-x: auto;
-  padding-bottom: 0.25rem;
-  padding-top: 0.25rem;
+  padding: 0.25rem 0;
   scrollbar-width: none;
-  /* Firefox */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
   position: relative;
   z-index: 1;
+}
+
+/* Mobile-Specific Centering & Snapping */
+@media (max-width: 1024px) {
+  .saved-cities-list {
+    scroll-snap-type: x mandatory;
+  }
+
+  /* Spacer for centering first and last cards on mobile */
+  .saved-cities-list::before,
+  .saved-cities-list::after {
+    content: "";
+    flex: 0 0 calc(50% - 60px);
+    display: block;
+  }
+
+  .city-preview {
+    scroll-snap-align: center;
+  }
+}
+
+/* PC-Specific Left-Aligned Experience */
+@media (min-width: 1025px) {
+  .saved-cities-list {
+    justify-content: flex-start;
+    padding-left: 0.5rem;
+    gap: 1rem;
+    scroll-snap-type: none;
+  }
 }
 
 .saved-cities-list::-webkit-scrollbar {
@@ -650,26 +680,33 @@ h3 {
 .city-preview {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.08);
+  gap: 0.25rem;
+  padding: 0.4rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
   -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), var(--lg-highlight);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), var(--lg-highlight);
   border: var(--lg-border);
   border-radius: 100px;
   cursor: pointer;
-  transition: all 0.3s var(--ease-cinematic);
+  transition: all 0.4s var(--ease-cinematic);
   white-space: nowrap;
-  font-size: 0.9rem;
+  flex-shrink: 0;
+  font-size: 0.85rem;
   position: relative;
   z-index: 5;
+  opacity: 0.8;
 }
 
 .city-preview.active {
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), var(--lg-highlight);
-  border-color: rgba(255, 255, 255, 0.4);
+  gap: 0.6rem;
+  padding: 0.5rem 1.15rem;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), var(--lg-highlight);
+  border-color: rgba(255, 255, 255, 0.45);
+  font-size: 0.95rem;
+  opacity: 1;
+  transform: scale(1.02);
 }
 
 .city-preview-temp {
@@ -677,17 +714,33 @@ h3 {
 }
 
 .city-preview-remove {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.25);
-  font-size: 0.85rem;
-  margin-left: 0.5rem;
-  opacity: 0.6;
-  transition: opacity 0.2s var(--ease-cinematic), background 0.2s var(--ease-cinematic);
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 0.8rem;
+  margin-left: 0.4rem;
+  opacity: 0;
+  /* Hidden by default */
+  pointer-events: none;
+  transition: all 0.3s var(--ease-cinematic);
+  transform: scale(0.5);
+}
+
+.city-preview.active .city-preview-remove,
+.city-preview:hover .city-preview-remove {
+  opacity: 0.7;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.city-preview-remove:hover {
+  opacity: 1 !important;
+  background: rgba(255, 59, 48, 0.4);
+  /* Subtle red tint on hover */
 }
 
 

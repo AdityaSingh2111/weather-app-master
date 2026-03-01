@@ -25,7 +25,7 @@ export const renderCityPreviews = (citiesData, activeIndex, onCityClick, onCityR
         const iconWrap = document.createElement('div');
         iconWrap.style.cssText = 'width: 24px; height: 24px;';
         if (data.state) {
-            iconWrap.innerHTML = getIconForCondition(data.state.rawCondition); // SVG is internal, safe
+            iconWrap.innerHTML = getIconForCondition(data.state.rawCondition);
         }
         chip.appendChild(iconWrap);
 
@@ -37,7 +37,7 @@ export const renderCityPreviews = (citiesData, activeIndex, onCityClick, onCityR
             : '--°';
         chip.appendChild(tempSpan);
 
-        // City name (sanitized via textContent)
+        // City name
         const nameSpan = document.createElement('span');
         nameSpan.textContent = data.city.name;
         chip.appendChild(nameSpan);
@@ -60,5 +60,19 @@ export const renderCityPreviews = (citiesData, activeIndex, onCityClick, onCityR
         });
 
         savedCitiesList.appendChild(chip);
+
+        // Auto-scroll the active chip into the center view on mobile/touch
+        if (index === activeIndex && window.innerWidth <= 1024) {
+            // Wait for both the DOM update and layout engine size recalculation (Due to .active growth)
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    chip.scrollIntoView({
+                        behavior: 'smooth',
+                        inline: 'center',
+                        block: 'nearest'
+                    });
+                });
+            });
+        }
     });
 };

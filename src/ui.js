@@ -16,6 +16,7 @@ const elements = {
     app: document.getElementById('app-content'),
     loading: document.getElementById('loading'),
     error: document.getElementById('error'),
+    errorTitle: document.querySelector('#error h2'),
     errorText: document.getElementById('error-text'),
     location: document.getElementById('location'),
     sunriseTime: document.getElementById('sunrise-time'),
@@ -61,6 +62,91 @@ export const initUI = () => {
             openDetailView('daily', liveState);
         });
     }
+};
+
+/**
+ * Binds Apple-style real-time horizontal swipe gestures to the main dashboard.
+ * Features 1:1 tracking, elastic snap-back, and high-performance RAF.
+ */
+export const bindDashboardSwipes = (onNext, onPrev) => {
+    const card = elements.dashboardCard;
+    if (!card) return;
+
+    let startX = 0;
+    let currentX = 0;
+    let isSwiping = false;
+    let rafId = null;
+
+    const updatePosition = () => {
+        if (!isSwiping) return;
+        const diffX = currentX - startX;
+
+        // Apply resistance as user pulls further (Apple feel)
+        const resistance = 0.8;
+        const translateX = diffX * resistance;
+
+        card.style.transform = `translateX(${translateX}px)`;
+
+        // Subtle opacity fade during swipe
+        const opacity = Math.max(0.6, 1 - Math.abs(diffX) / (window.innerWidth * 0.8));
+        card.style.opacity = opacity;
+
+        rafId = requestAnimationFrame(updatePosition);
+    };
+
+    card.addEventListener('touchstart', (e) => {
+        // Only trigger if one finger is used
+        if (e.touches.length !== 1) return;
+
+        startX = e.touches[0].clientX;
+        currentX = startX;
+        isSwiping = true;
+
+        card.classList.add('swiping');
+        card.classList.remove('snap-back');
+
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(updatePosition);
+    }, { passive: true });
+
+    card.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        currentX = e.touches[0].clientX;
+    }, { passive: true });
+
+    card.addEventListener('touchend', (e) => {
+        if (!isSwiping) return;
+        isSwiping = false;
+        if (rafId) cancelAnimationFrame(rafId);
+
+        const diffX = e.changedTouches[0].clientX - startX;
+        const threshold = window.innerWidth * 0.25; // 25% width to trigger
+
+        card.classList.remove('swiping');
+
+        if (Math.abs(diffX) > threshold) {
+            // Success! Trigger switch
+            if (diffX < 0) {
+                onNext();
+            } else {
+                onPrev();
+            }
+            // Reset styles immediately before transition-fade takes over
+            card.style.transform = '';
+            card.style.opacity = '';
+        } else {
+            // Abort - Elastic snap back
+            card.classList.add('snap-back');
+            card.style.transform = 'translateX(0)';
+            card.style.opacity = '1';
+
+            // Clean up class after animation
+            setTimeout(() => {
+                card.classList.remove('snap-back');
+                card.style.transform = '';
+            }, 500);
+        }
+    }, { passive: true });
 };
 
 export const animateDashboardTransition = (callback) => {
@@ -124,6 +210,15 @@ export const updateUI = (state) => {
     if (state.error) {
         elements.loading.classList.add('hidden');
         elements.error.classList.remove('hidden');
+
+        // Dynamically rotate titles to distinguish "Empty/First Load" from "True Errors"
+        if (state.error.toLowerCase().includes('welcome') ||
+            state.error.toLowerCase().includes('search')) {
+            if (elements.errorTitle) elements.errorTitle.textContent = "Your Weather Journey";
+        } else {
+            if (elements.errorTitle) elements.errorTitle.textContent = "System Interruption";
+        }
+
         elements.errorText.innerText = state.error;
         elements.app.classList.add('hidden');
         return;

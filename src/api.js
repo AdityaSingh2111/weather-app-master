@@ -11,6 +11,9 @@ const buildUrl = (endpoint, params) => {
         if (endpoint === 'geo') {
             return `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(params.q)}&limit=${params.limit || 5}&appid=${DEV_API_KEY}`;
         }
+        if (endpoint === 'reverse') {
+            return `https://api.openweathermap.org/geo/1.0/reverse?lat=${params.lat}&lon=${params.lon}&limit=1&appid=${DEV_API_KEY}`;
+        }
         const base = `https://api.openweathermap.org/data/2.5/${endpoint}`;
         return `${base}?lat=${params.lat}&lon=${params.lon}&units=metric&appid=${DEV_API_KEY}`;
     }
@@ -88,5 +91,19 @@ export const searchCityList = async (query) => {
     } catch (error) {
         console.error('searchCityList Error:', error);
         return [];
+    }
+};
+/**
+ * Reverse geocodes coordinates into a city name.
+ */
+export const fetchReverseGeocode = async (lat, lon) => {
+    try {
+        const response = await fetch(buildUrl('reverse', { lat, lon }));
+        if (!response.ok) return null;
+        const results = await response.json();
+        return results.length > 0 ? results[0] : null;
+    } catch (error) {
+        console.error('fetchReverseGeocode Error:', error);
+        return null;
     }
 };

@@ -3,7 +3,7 @@
 
 import { processAtmosphereData } from './atmosphere.js';
 
-export const normalizeWeatherData = (weatherData, forecastData, uviData, aqiData, lat = null) => {
+export const normalizeWeatherData = (weatherData, forecastData, uviData, aqiData, lat = null, exactName = null) => {
     const atmosphere = processAtmosphereData(weatherData);
 
     // Robust 5-Day Forecast Aggregation from 3-hourly data
@@ -80,7 +80,7 @@ export const normalizeWeatherData = (weatherData, forecastData, uviData, aqiData
 
     return {
         // Base Info
-        locationName: weatherData.name,
+        locationName: exactName || weatherData.name,
         latitude: lat,
         timezoneOffset: weatherData.timezone,
 
