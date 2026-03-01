@@ -1,7 +1,7 @@
 // Main Entry Point
 import { fetchAllWeatherData, searchCityList } from './api.js';
 import { setState, subscribe } from './state.js';
-import { updateUI, bindSearchInput, renderSearchResults, renderCityPreviews, animateDashboardTransition } from './ui.js';
+import { updateUI, bindSearchInput, renderSearchResults, renderCityPreviews, animateDashboardTransition, initUI } from './ui.js';
 import { normalizeWeatherData } from './transform.js';
 import { initTimeEngine } from './timeEngine.js';
 
@@ -252,6 +252,7 @@ const init = async () => {
 
     // Bind main render flow
     subscribe(updateUI);
+    initUI();
     setupSearch();
 
     const geoBtn = document.getElementById('geo-btn');

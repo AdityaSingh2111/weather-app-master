@@ -74,19 +74,28 @@ export const renderForecasts = (state) => {
             state.hourlyForecast.forEach((hourData) => {
                 try {
                     const hourText = getShortHour(hourData.dt, state.timezoneOffset);
-                    const temp = Math.round(hourData.main.temp);
-                    const weatherMain = hourData.weather && hourData.weather[0] ? hourData.weather[0].main : 'Clear';
-                    const svgIcon = getIconForCondition(weatherMain);
-                    const popHtml = hourData.pop > 0 ? `<div class="fc-pop">${hourData.pop}%</div>` : ``;
+                    const temp = Math.round(hourData.temp);
+                    const weatherIcon = hourData.weather && hourData.weather[0] ? hourData.weather[0].icon : '01d';
+
+                    // Vibrant URL from OpenWeatherMap
+                    const iconUrl = `https://openweathermap.org/img/wn/${weatherIcon}@2x.png`;
+
+                    // Tiny, unobtrusive pop indicator
+                    const popValue = hourData.pop || 0;
+                    const popHtml = popValue > 0
+                        ? `<div style="color: #4facfe; font-size: 0.7rem; font-weight: 700; margin-top: -5px;">${popValue}%</div>`
+                        : `<div style="height: 0.7rem; margin-top: -5px;"></div>`; // Spacer to maintain alignment
+
+                    const isDay = hourData.pod ? (hourData.pod === 'd') : (hourData.dt >= state.sunrise && hourData.dt < state.sunset);
 
                     html += `
-                        <div class="forecast-day">
-                            <span class="fc-day-name">${hourText || '--:--'}</span>
-                            <div class="fc-icon">${svgIcon}</div>
-                            ${popHtml}
-                            <div class="fc-temps">
-                                <span class="fc-temp-max">${isNaN(temp) ? '--' : temp}&deg;</span>
+                        <div class="hourly-item" data-index="${state.hourlyForecast.indexOf(hourData)}">
+                            <span style="font-size: 0.85rem; opacity: 0.8; font-weight: 500;">${hourText || '--:--'}</span>
+                            <div style="width: 32px; height: 32px; margin: 6px 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); display: flex; align-items: center; justify-content: center;">
+                                ${getIconForCondition(hourData.weather[0].main, isDay)}
                             </div>
+                            ${popHtml}
+                            <span style="font-size: 1.1rem; font-weight: 500; margin-top: 0.25rem;">${isNaN(temp) ? '--' : temp}&deg;</span>
                         </div>
                     `;
                 } catch (err) {

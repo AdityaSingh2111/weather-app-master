@@ -27,7 +27,9 @@ export const normalizeWeatherData = (weatherData, forecastData, uviData, aqiData
                     temp_max: item.main.temp_max,
                     temp_min: item.main.temp_min,
                     weather: item.weather,
-                    pop: item.pop || 0
+                    pop: item.pop || 0,
+                    wind_speed: item.wind.speed,
+                    humidity: item.main.humidity
                 };
             } else {
                 // Update Min/Max
@@ -39,16 +41,19 @@ export const normalizeWeatherData = (weatherData, forecastData, uviData, aqiData
                 }
                 // Maximize pop
                 dailyData[date].pop = Math.max(dailyData[date].pop, item.pop || 0);
+                dailyData[date].wind_speed = Math.max(dailyData[date].wind_speed, item.wind.speed);
+                dailyData[date].humidity = Math.max(dailyData[date].humidity, item.main.humidity);
             }
         });
 
-        // Convert to array and format to strictly 5 days
         return Object.values(dailyData).slice(0, 5).map(day => ({
             dt: day.dt,
             date: day.date,
             main: { temp_max: day.temp_max, temp_min: day.temp_min },
             weather: day.weather,
-            pop: Math.round(day.pop * 100)
+            pop: Math.round(day.pop * 100),
+            wind_speed: day.wind_speed,
+            humidity: day.humidity
         }));
     };
 
@@ -57,7 +62,21 @@ export const normalizeWeatherData = (weatherData, forecastData, uviData, aqiData
     // Extract next 24 hours of forecast, 3-hour increments
     const hourlyForecast = forecastData.list
         .slice(0, 8)
-        .map(item => ({ ...item, pop: Math.round((item.pop || 0) * 100) }));
+        .map(item => ({
+            dt: item.dt,
+            dt_txt: item.dt_txt,
+            temp: item.main.temp,
+            feels_like: item.main.feels_like,
+            pop: Math.round((item.pop || 0) * 100),
+            weather: item.weather,
+            pod: item.sys ? item.sys.pod : null,
+            rain: item.rain ? (item.rain['3h'] || 0) : 0,
+            snow: item.snow ? (item.snow['3h'] || 0) : 0
+        }));
+
+    // Extract detailed AQI if available
+    const aqiList = aqiData?.list?.[0];
+    const aqiComponents = aqiList?.components || null;
 
     return {
         // Base Info
@@ -83,6 +102,8 @@ export const normalizeWeatherData = (weatherData, forecastData, uviData, aqiData
         // Wind
         windSpeed: weatherData.wind.speed,
         windDirection: weatherData.wind.deg,
+        rain: weatherData.rain ? (weatherData.rain['1h'] || weatherData.rain['3h'] || 0) : 0,
+        snow: weatherData.snow ? (weatherData.snow['1h'] || weatherData.snow['3h'] || 0) : 0,
 
         // Astronomy
         sunrise: weatherData.sys.sunrise,
@@ -90,7 +111,9 @@ export const normalizeWeatherData = (weatherData, forecastData, uviData, aqiData
 
         // Solar & Environment
         uvIndex: uviData ? uviData.value : null,
-        aqi: aqiData?.list?.[0]?.main?.aqi || null,
+        uviForecast: uviData || null, // Keeping full object in case its needed
+        aqi: aqiList?.main?.aqi || null,
+        aqiComponents: aqiComponents,
 
         // Aggregated Arrays
         dailyForecast: dailyForecast,
