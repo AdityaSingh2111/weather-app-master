@@ -17,11 +17,13 @@ const updateParallax = () => {
     currentX += (targetX - currentX) * easeFactor;
     currentY += (targetY - currentY) * easeFactor;
 
-    document.documentElement.style.setProperty('--mouse-x', currentX.toFixed(3));
-    document.documentElement.style.setProperty('--mouse-y', currentY.toFixed(3));
-
     // Check if we reached the target closely enough to pause RAF rendering
-    if (Math.abs(targetX - currentX) > 0.001 || Math.abs(targetY - currentY) > 0.001) {
+    if (Math.abs(targetX - currentX) > 0.0001 || Math.abs(targetY - currentY) > 0.0001) {
+        const app = document.getElementById('app-content');
+        if (app) {
+            app.style.setProperty('--mouse-x', currentX.toFixed(3));
+            app.style.setProperty('--mouse-y', currentY.toFixed(3));
+        }
         requestRef = requestAnimationFrame(updateParallax);
     } else {
         requestRef = null;

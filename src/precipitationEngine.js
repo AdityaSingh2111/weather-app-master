@@ -54,25 +54,40 @@ export const renderPrecipitation = (ctx, canvas, timestamp, state) => {
         ctx.beginPath();
     }
 
-    for (let p of particles) {
-        // Move
-        p.y += p.vy;
-        p.x += p.vx;
+    if (currentType === 'snow') {
+        ctx.beginPath();
+        for (let p of particles) {
+            // Move
+            p.y += p.vy;
+            p.x += p.vx;
 
-        // Reset if offscreen
-        if (p.y > canvas.height) {
-            p.y = -10;
-            p.x = Math.random() * canvas.width;
-        }
+            // Reset if offscreen
+            if (p.y > canvas.height) {
+                p.y = -10;
+                p.x = Math.random() * canvas.width;
+            }
 
-        // Draw
-        if (currentType === 'snow') {
-            ctx.beginPath();
+            // Batch paths
+            ctx.moveTo(p.x + p.size, p.y);
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fill();
-        } else {
+        }
+        ctx.fill();
+    } else {
+        ctx.beginPath();
+        for (let p of particles) {
+            // Move
+            p.y += p.vy;
+            p.x += p.vx;
+
+            // Reset if offscreen
+            if (p.y > canvas.height) {
+                p.y = -10;
+                p.x = Math.random() * canvas.width;
+            }
+
+            // Draw streak
             ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p.x + p.vx * 2, p.y + p.vy * 2); // Streak
+            ctx.lineTo(p.x + p.vx * 2, p.y + p.vy * 2);
         }
     }
 

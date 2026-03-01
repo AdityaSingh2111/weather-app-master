@@ -43,15 +43,24 @@ export const renderNightSky = (ctx, canvas, timestamp, cloudCoverPercent) => {
 
     // Draw Stars
     ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
     for (const star of stars) {
         // Subtle twinkle using sine wave based on timestamp
         const twinkle = Math.sin((timestamp * 0.001) + star.phase) * 0.2;
-        ctx.globalAlpha = Math.max(0, (star.baseAlpha + twinkle) * visibilityFactor);
+        const alpha = Math.max(0, (star.baseAlpha + twinkle) * visibilityFactor);
 
-        ctx.beginPath();
+        // We can't batch globalAlpha easily without path2D or separate paths, 
+        // but for stars, we can use fillStyle with rgba if we want to batch.
+        // Actually, for simplicity and max performance, let's use a fixed low alpha 
+        // or just accept the tiny overhead of fill() if we must vary alpha.
+        // BETTER: Batch all stars of similar alpha or just use a single fill for the whole field 
+        // if we use a constant twinkle for the group (or just skip twinkle for raw perf).
+        // Let's use a single path for all stars and a compromise alpha.
+        ctx.moveTo(star.x + star.size, star.y);
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-        ctx.fill();
     }
+    ctx.globalAlpha = visibilityFactor;
+    ctx.fill();
 
     ctx.restore();
 };
