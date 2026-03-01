@@ -14,6 +14,18 @@
   --nav-height-mobile: 64px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Apple Liquid Glass Tokens */
+  --lg-blur: 40px;
+  --lg-saturate: 180%;
+  --lg-contrast: 110%;
+  --lg-border: 1px solid rgba(255, 255, 255, 0.18);
+  --lg-highlight: inset 0 0.5px 0 0.5px rgba(255, 255, 255, 0.25), inset 0 -0.5px 0 0.5px rgba(0, 0, 0, 0.1);
+  --lg-shadow:
+    0 4px 24px -1px rgba(0, 0, 0, 0.2),
+    0 12px 48px -2px rgba(0, 0, 0, 0.3),
+    0 32px 80px -4px rgba(0, 0, 0, 0.4);
+  --lg-surface: radial-gradient(circle at top left, rgba(255, 255, 255, 0.08) 0%, transparent 40%);
 }
 
 html,
@@ -45,11 +57,66 @@ body {
 /* Premium Glassmorphism System */
 .glass-panel {
   background: rgba(20, 30, 48, 0.45);
-  backdrop-filter: blur(24px) saturate(1.5);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) contrast(var(--lg-contrast));
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) contrast(var(--lg-contrast));
+  border: var(--lg-border);
+  box-shadow: var(--lg-shadow);
   border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel,
+.dashboard-card,
+.city-preview,
+.nav-btn.active,
+.metric-box,
+.forecast-day,
+.daily-forecast-row {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Base shine layer for all animated glass */
+.glass-panel::after,
+.dashboard-card::after,
+.city-preview::after,
+.nav-btn.active::after,
+.metric-box::after,
+.forecast-day::after,
+.daily-forecast-row::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.08),
+      transparent);
+  transform: translateX(-100%) skewX(-30deg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.glass-panel:hover::after,
+.dashboard-card:hover::after,
+.city-preview:hover::after,
+.nav-btn.active:hover::after,
+.metric-box:hover::after,
+.forecast-day:hover::after,
+.daily-forecast-row:hover::after {
+  animation: ultraShine 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--lg-surface);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Skeleton Loading System */
@@ -63,12 +130,40 @@ body {
   }
 }
 
+@keyframes ultraShine {
+  0% {
+    transform: translateX(-100%) skewX(-30deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  80% {
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: translateX(200%) skewX(-30deg);
+    opacity: 0;
+  }
+}
+
 .skeleton-block {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 75%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.03) 75%);
   background-size: 1000px 100%;
-  animation: shimmer 2s infinite linear;
+  animation: shimmer 3s infinite linear;
   border-radius: 8px;
-  opacity: 0.8;
+  backdrop-filter: blur(12px) saturate(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+  opacity: 0.5;
 }
 
 .skeleton-text {
@@ -114,13 +209,15 @@ body {
   width: 100%;
   padding: 0.75rem 0;
   text-align: center;
-  background: rgba(200, 150, 0, 0.2);
-  backdrop-filter: blur(24px) saturate(1.5);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  border-bottom: 1px solid rgba(255, 200, 0, 0.3);
+  background: rgba(200, 150, 0, 0.15);
+  backdrop-filter: blur(var(--lg-blur)) saturate(1.8);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(1.8);
+  border-bottom: var(--lg-border);
+  box-shadow: var(--lg-shadow), var(--lg-highlight);
   color: #FFE066;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   z-index: 999;
   transform: translateY(0);
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
@@ -135,11 +232,12 @@ body {
 
 .error-msg {
   color: #ff5252;
-  background-color: rgba(255, 235, 238, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 82, 82, 0.3);
+  background-color: rgba(255, 50, 50, 0.1);
+  backdrop-filter: blur(var(--lg-blur)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(1.5);
+  border-radius: 16px;
+  border: var(--lg-border);
+  box-shadow: var(--lg-shadow), var(--lg-highlight);
 }
 
 /* Cinematic Container & Layers */
@@ -335,10 +433,10 @@ h3 {
   max-width: clamp(320px, 90vw, 1000px);
   /* Fallback for browsers without backdrop-filter */
   background: rgba(10, 15, 25, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: var(--lg-border);
   border-radius: clamp(16px, 3vw, 32px);
   padding: clamp(1.25rem, 4vw, 3rem);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: var(--lg-shadow);
   display: flex;
   flex-direction: column;
   gap: clamp(1.5rem, 4vw, 3rem);
@@ -346,13 +444,28 @@ h3 {
   transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), border 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform, opacity;
   contain: layout style;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4) 20%, rgba(255, 255, 255, 0.4) 80%, transparent);
+  pointer-events: none;
+  z-index: 1;
 }
 
 @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
   .dashboard-card {
-    background: rgba(10, 15, 25, 0.55);
-    backdrop-filter: blur(48px) saturate(1.2);
-    -webkit-backdrop-filter: blur(48px) saturate(1.2);
+    background: rgba(10, 15, 25, 0.45);
+    backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) contrast(var(--lg-contrast));
+    -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) contrast(var(--lg-contrast));
+    box-shadow: var(--lg-shadow), var(--lg-highlight);
   }
 }
 
@@ -390,33 +503,24 @@ h3 {
 #city-search {
   width: 100%;
   padding: clamp(1rem, 3vw, 1.1rem) clamp(3rem, 12vw, 4rem) clamp(1rem, 3vw, 1.1rem) clamp(1.25rem, 4vw, 2rem);
-  /* Fallback for browsers without backdrop-filter */
-  background: rgba(10, 15, 30, 0.75);
-  border: none;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(var(--lg-blur)) saturate(1.8);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(1.8);
+  border: var(--lg-border);
   border-radius: 100px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--lg-shadow), var(--lg-highlight);
   color: white;
   font-family: inherit;
   font-size: clamp(1rem, 3vw, 1.15rem);
   outline: none;
-  transition: background 0.3s var(--ease-cinematic), box-shadow 0.3s var(--ease-cinematic);
-  /* Prevent layout shift from iOS font scaling */
+  transition: all 0.3s var(--ease-cinematic);
   -webkit-text-size-adjust: 100%;
 }
 
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  #city-search {
-    background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-}
-
 #city-search:focus {
-  background: rgba(0, 0, 0, 0.5);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), 0 0 0 3px rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.2);
-  outline: 2px solid rgba(255, 255, 255, 0.2);
-  outline-offset: 2px;
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), var(--lg-shadow), var(--lg-highlight);
 }
 
 #city-search::placeholder {
@@ -481,23 +585,16 @@ h3 {
   top: calc(100% + 0.5rem);
   left: 0;
   right: 0;
-  /* Solid fallback for Firefox and older Safari */
-  background: rgba(12, 18, 32, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 18, 32, 0.6);
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  border: var(--lg-border);
   border-radius: clamp(16px, 3vw, 24px);
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 320px;
   z-index: 300;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .search-results {
-    background: rgba(20, 30, 48, 0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
+  box-shadow: var(--lg-shadow), var(--lg-highlight);
 }
 
 .search-result-item {
@@ -555,21 +652,24 @@ h3 {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), var(--lg-highlight);
+  border: var(--lg-border);
   border-radius: 100px;
   cursor: pointer;
-  transition: background 0.3s var(--ease-cinematic), transform 0.3s var(--ease-cinematic), box-shadow 0.3s var(--ease-cinematic);
+  transition: all 0.3s var(--ease-cinematic);
   white-space: nowrap;
   font-size: 0.9rem;
   position: relative;
   z-index: 5;
 }
 
-
 .city-preview.active {
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), var(--lg-highlight);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .city-preview-temp {
@@ -796,9 +896,11 @@ h3 {
   align-items: center;
   padding: 1.25rem 1rem;
   background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), var(--lg-highlight);
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -855,9 +957,11 @@ h3 {
   justify-content: center;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), var(--lg-highlight);
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -979,18 +1083,32 @@ h3 {
   align-items: center;
   padding: 1rem 1.25rem;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(var(--lg-blur)) saturate(110%);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(110%);
+  border: var(--lg-border);
   border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), var(--lg-highlight);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-forecast-row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.5px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.2) 80%, transparent);
+  pointer-events: none;
 }
 
 .daily-forecast-row:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: translateX(8px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), var(--lg-highlight);
 }
 
 .df-date-group {
@@ -1190,7 +1308,8 @@ h3 {
 .nav-btn.active {
   color: #fff;
   background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), var(--lg-highlight);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .nav-btn.active svg {
@@ -1555,16 +1674,17 @@ h3 {
     transition-duration: 0.01ms !important;
   }
 
-  .dashboard-card {
+  .dashboard-card,
+  .glass-panel,
+  .metric-box,
+  .forecast-day,
+  .daily-forecast-row,
+  .city-preview {
     transform: none !important;
   }
 
-  .bg-buffer {
-    animation: none !important;
-  }
-
-  .starfield-layer::after {
-    animation: none !important;
+  .ani-shine::after {
+    display: none !important;
   }
 }
 
